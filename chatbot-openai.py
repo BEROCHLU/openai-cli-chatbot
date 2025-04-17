@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 API_KEY = os.environ.get("OPENAI_API_KEY")  # 環境変数に設定したAPIキーを取得
-MODEL = "gpt-4.1"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
+MODEL = "gpt-4.5-preview"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
 TEMPERATURE = 1.0
 REASONING_EFFORT = "high"  # low | medium | high
 

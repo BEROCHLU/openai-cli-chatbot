@@ -8,6 +8,7 @@ This script is a simple chatbot that interacts with users through a terminal usi
 - Maintains conversation history for context-aware replies.
 - Saves conversation history to the `./history` folder.
 - Supports text file content input using pipe ` | ` syntax.
+- Supports instant saving of conversation history using the `!save` command without ending the session.
 
 ## Requirements
 Ensure you have the following installed:
@@ -47,6 +48,12 @@ File analysis mode: (Use spaces around '|' and multiple files supported.)
 
 Exit: Press Enter with empty input to save the conversation history to `./history` folder.
 
+Immediately save conversation history at any time:
+
+    User: !save
+
+Typing `!save` will instantly save the current conversation history without exiting.
+
 ## Example Interaction
 ```plaintext
 User: ワタシは寝ないでゲームをシマス。物事の優先順位が分ってマスカラネ。
@@ -57,10 +64,6 @@ User: Help fix this error | err_log.txt
 Assistant:
 ### Error Analysis
 The contents of `err_log.txt` indicate the following issues...
-
-User: Suggest optimizations | history/main.py
-Assistant:
-# Optimized code example here...
 
 User: Translate please | a.txt | history/b.txt | c.txt
 Assistant:
