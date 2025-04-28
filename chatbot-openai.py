@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 import os
 import re
+import gptconfigs
+
 from datetime import datetime
 from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
 
 API_KEY = os.environ.get("OPENAI_API_KEY")  # 環境変数に設定したAPIキーを取得
-MODEL = "gpt-4.1"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
-TEMPERATURE = 0.35
-REASONING_EFFORT = "high"  # low | medium | high
+MODEL = gptconfigs.MODEL
+TEMPERATURE = gptconfigs.TEMPERATURE
+REASONING_EFFORT = gptconfigs.REASONING_EFFORT
 
 client = OpenAI(api_key=API_KEY)
-
 console = Console()
 
 # 会話の初期コンテキストとして system メッセージを設定
