@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import re
-import gptconfigs
+import settings
 
 from datetime import datetime
 from openai import OpenAI
@@ -9,9 +9,9 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 API_KEY = os.environ.get("OPENAI_API_KEY")  # 環境変数に設定したAPIキーを取得
-MODEL = gptconfigs.MODEL
-TEMPERATURE = gptconfigs.TEMPERATURE
-REASONING_EFFORT = gptconfigs.REASONING_EFFORT
+MODEL = settings.MODEL
+TEMPERATURE = settings.TEMPERATURE
+REASONING_EFFORT = settings.REASONING_EFFORT
 
 client = OpenAI(api_key=API_KEY)
 console = Console()
