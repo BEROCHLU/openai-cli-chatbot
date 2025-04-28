@@ -7,8 +7,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 API_KEY = os.environ.get("OPENAI_API_KEY")  # 環境変数に設定したAPIキーを取得
-MODEL = "gpt-4.5-preview"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
-TEMPERATURE = 1.0
+MODEL = "gpt-4.1"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
+TEMPERATURE = 0.35
 REASONING_EFFORT = "high"  # low | medium | high
 
 client = OpenAI(api_key=API_KEY)
@@ -34,6 +34,7 @@ if re.match(r"^o[1-9]-", MODEL):
     api_params["max_completion_tokens"] = 99999
 elif re.match(r"^gpt-4\.1", MODEL):
     api_params["max_completion_tokens"] = 32768
+
 
 # 会話履歴保存処理を関数化
 def save_conversation(history, save_dir="./history"):
@@ -99,10 +100,10 @@ while True:
 
         assistant_reply = ""
         for chunk in response:
-            if chunk.choices[0].delta.content:
-                content = chunk.choices[0].delta.content
-                assistant_reply += content
-                console.print(content, end="", style="white")
+            delta = chunk.choices[0].delta
+            if hasattr(delta, "content") and delta.content:
+                assistant_reply += delta.content
+                console.print(delta.content, end="", style="white")
         console.print("\n")
 
         conversation.append({"role": "assistant", "content": assistant_reply})
