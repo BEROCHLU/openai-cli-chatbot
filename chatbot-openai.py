@@ -29,7 +29,7 @@ api_params = {
 }
 
 # モデル別設定
-if re.match(r"^o[1-9]-", MODEL):
+if re.match(r"^o[1-9]", MODEL):
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 99999

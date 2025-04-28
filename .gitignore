@@ -1,4 +1,5 @@
 history/
 .vscode/
 .file/
+__pycache__/
 settings.py
