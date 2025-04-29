@@ -28,8 +28,13 @@ Optional (recommended):
    ```bash
    export OPENAI_API_KEY="your_api_key_here"
    ```
-
-2. **Run the Script**
+2. **Rename `settings_example.py` to `settings.py`, then open `settings.py` and set:**
+   ```bash
+   MODEL = "gpt-4.1"  # gpt-4.1-mini | o4-mini | gpt-4.1 | chatgpt-4o-latest | o3 | gpt-4.5-preview
+   TEMPERATURE = 1.0
+   REASONING_EFFORT = "medium"  # low | medium | high
+   ```
+3. **Run the Script**
    - Execute the script using:
    ```bash
    python chatbot-openai.py
@@ -71,9 +76,12 @@ Assistant:
 ```
 
 ## Configuration
-- **model**: Choose your preferred OpenAI model, such as `gpt-4.1` or `o4-mini` or `gpt-4.5-preview`.
-- **temperature**: Controls randomness. Refer to [official docs](https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature) for valid ranges.
-- **max_tokens**: Maximum tokens per response. The maximum value varies depending on the model.
+- **MODEL**: Choose your preferred OpenAI model, such as `gpt-4.1`, `o4-mini` or `gpt-4.5-preview`.
+- **TEMPERATURE**: Higher means more creativity but less reproducibility; lower means more consistency and reproducibility.
+- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter can only be used with reasoning models.
+
+## Note
+- **max_completion_tokens**: The maximum value is set depending on the model.
 
 ## License
 MIT
