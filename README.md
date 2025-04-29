@@ -7,7 +7,7 @@ This script is a simple chatbot that interacts with users through a terminal usi
 - Uses OpenAI API for generating responses.
 - Maintains conversation history for context-aware replies.
 - Saves conversation history to the `./history` folder.
-- Supports text file content input using pipe ` | ` syntax.
+- Supports text and xlsx files content input using pipe ` | ` syntax.
 - Supports instant saving of conversation history using the `!save` command without ending the session.
 
 ## Requirements
@@ -15,7 +15,7 @@ Ensure you have the following installed:
 - Python 3.10+
 - Required Python packages:
   ```bash
-  pip install openai
+  pip install -r requirements.txt
   ```
 
 Optional (recommended):

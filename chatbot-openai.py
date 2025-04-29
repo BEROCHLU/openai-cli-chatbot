@@ -2,7 +2,8 @@
 import os
 import re
 import settings
-
+import json
+import pandas as pd
 from datetime import datetime
 from openai import OpenAI
 from rich.console import Console
@@ -73,18 +74,35 @@ while True:
     user_question = args[0].strip()
     file_contents = ""
 
-    # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応）
+    # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応・xlsx→JSON変換対応）
     if len(args) >= 2:
-        file_paths = args[1:]  # 2つ目以降の引数をすべてファイルパスとして扱う
+        file_paths = args[1:]
         for file_path in file_paths:
             file_path = file_path.strip()
+            file_ext = os.path.splitext(file_path)[1].lower()
+
             try:
-                with open(file_path, "r", encoding="utf-8") as file:
-                    file_contents += f"\n\n--- File: {file_path} ---\n\n"
-                    file_contents += file.read()
-                console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
+                if file_ext == ".xlsx":
+                    # エクセルの場合はJSONに変換
+                    sheets_dict = pd.read_excel(file_path, sheet_name=None)
+                    json_data = {sheet: df.to_dict(orient="records") for sheet, df in sheets_dict.items()}
+                    json_str = json.dumps(json_data, ensure_ascii=False, indent=2)
+
+                    file_contents += f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n"
+                    file_contents += json_str
+
+                    console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
+
+                else:
+                    # 通常ファイルはそのまま処理
+                    with open(file_path, "r", encoding="utf-8") as file:
+                        file_contents += f"\n\n--- File: {file_path} ---\n\n"
+                        file_contents += file.read()
+
+                    console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
+
             except Exception as e:
-                console.print(f"[bold red]Error loading file '{file_path}': {e}[/bold red]")
+                console.print(f"[bold red]Error processing file '{file_path}': {e}[/bold red]")
                 break
 
     # AIの応答を会話履歴に追加
@@ -110,6 +128,7 @@ while True:
         conversation.append({"role": "assistant", "content": assistant_reply})
     except Exception as e:
         console.print(f"[bold red]Error occurred: {e}[/bold red]\n")
+        save_conversation(conversation)
         continue
 
 

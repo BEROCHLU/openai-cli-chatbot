@@ -3,3 +3,4 @@ history/
 .file/
 __pycache__/
 settings.py
+*.lnk
