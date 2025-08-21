@@ -29,13 +29,17 @@ api_params = {
     "max_completion_tokens": 16384,  # max_tokens(Deprecated)と違い、出力トークンのみの制限
 }
 
-# モデル別設定
+# モデル別output設定
 if re.match(r"^o[1-9]", MODEL):
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 99999
 elif re.match(r"^gpt-4\.1", MODEL):
     api_params["max_completion_tokens"] = 32768
+elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
+    api_params["temperature"] = 1.0
+    api_params["reasoning_effort"] = REASONING_EFFORT
+    api_params["max_completion_tokens"] = 128000
 
 
 # 会話履歴保存処理を関数化
