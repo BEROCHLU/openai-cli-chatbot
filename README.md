@@ -76,9 +76,9 @@ Assistant:
 ```
 
 ## Configuration
-- **MODEL**: Choose your preferred OpenAI model, such as `gpt-4.1`, `o4-mini` or `gpt-4.5-preview`.
+- **MODEL**: Choose your preferred OpenAI model, such as `gpt-5`, `gpt-4.1` or `o4-mini`.
 - **TEMPERATURE**: Higher means more creativity but less reproducibility; lower means more consistency and reproducibility.
-- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is ignored except for reasoning models.
+- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including GPT-5.
 
 ## Note
 - **max_completion_tokens**: The maximum value is set depending on the model.
