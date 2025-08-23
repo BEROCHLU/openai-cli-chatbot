@@ -31,6 +31,10 @@ api_params = {
 
 # モデル別output設定
 if re.match(r"^o[1-9]", MODEL):
+    if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
+        REASONING_EFFORT = "low"
+        print(f"{REASONING_EFFORT} is used only for gpt-5")
+
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 99999
