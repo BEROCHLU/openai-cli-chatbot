@@ -62,7 +62,7 @@ def save_conversation(history, save_dir="./history"):
 # メインループ（ユーザーとの会話を処理）
 while True:
     # ユーザーからの入力を取得
-    user_input = input(f"{MODEL}>> ")
+    user_input = input("User: ")
     if not user_input:
         break
 
@@ -119,7 +119,7 @@ while True:
     try:
         response = client.chat.completions.create(**api_params, stream=True)
 
-        console.print("[bold green]Assistant:[/bold green]")
+        console.print(f"[bold green]{MODEL} Assistant:[/bold green]")
 
         assistant_reply = ""
         for chunk in response:
