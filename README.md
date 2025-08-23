@@ -30,7 +30,7 @@ Optional (recommended):
    ```
 2. **Rename `settings_example.py` to `settings.py`, then open `settings.py` and set:**
    ```bash
-   MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-4.1 | o4-mini | o3
+   MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
    TEMPERATURE = 1.0
    REASONING_EFFORT = "medium"  # low | medium | high
    ```

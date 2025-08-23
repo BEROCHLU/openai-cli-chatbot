@@ -62,7 +62,7 @@ def save_conversation(history, save_dir="./history"):
 # メインループ（ユーザーとの会話を処理）
 while True:
     # ユーザーからの入力を取得
-    user_input = input("User: ")
+    user_input = input(f"{MODEL}>> ")
     if not user_input:
         break
 
