@@ -29,8 +29,18 @@ api_params = {
     "max_completion_tokens": 16384,  # max_tokens(Deprecated)と違い、出力トークンのみの制限
 }
 
+role_label = " ".join([MODEL, str(TEMPERATURE)])
+
 # モデル別output設定
-if re.match(r"^o[1-9]", MODEL):
+if re.match(r"^gpt-4\.1", MODEL):
+    api_params["max_completion_tokens"] = 32768
+elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
+    api_params["temperature"] = 1.0
+    api_params["reasoning_effort"] = REASONING_EFFORT
+    api_params["max_completion_tokens"] = 128000
+    
+    role_label = " ".join([MODEL, REASONING_EFFORT])
+elif re.match(r"^o[1-9]", MODEL):
     if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
         REASONING_EFFORT = "low"
         print(f'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for GPT-5.')
@@ -38,12 +48,8 @@ if re.match(r"^o[1-9]", MODEL):
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 99999
-elif re.match(r"^gpt-4\.1", MODEL):
-    api_params["max_completion_tokens"] = 32768
-elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
-    api_params["temperature"] = 1.0
-    api_params["reasoning_effort"] = REASONING_EFFORT
-    api_params["max_completion_tokens"] = 128000
+
+    role_label = " ".join([MODEL, REASONING_EFFORT])
 
 
 # 会話履歴保存処理を関数化
@@ -57,7 +63,7 @@ def save_conversation(history, save_dir="./history"):
         with open(history_file, "w", encoding="utf-8") as f:
             # 会話履歴の出力
             for msg in history:
-                f.write(f'{msg["role"].capitalize()}: {msg["content"]}\n\n')
+                f.write(f'{role_label} {msg["role"].capitalize()}: {msg["content"]}\n\n')
         console.print(f"[bold blue]Conversation history saved to {history_file}[/bold blue]")
     except Exception as e:
         console.print(f"[bold red]Failed to save conversation history: {e}[/bold red]")
@@ -123,7 +129,7 @@ while True:
     try:
         response = client.chat.completions.create(**api_params, stream=True)
 
-        console.print(f"[bold green]{MODEL} Assistant:[/bold green]")
+        console.print(f"[bold green]{role_label} Assistant:[/bold green]")
 
         assistant_reply = ""
         for chunk in response:
