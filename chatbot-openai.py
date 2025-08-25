@@ -25,7 +25,7 @@ api_params = {
     "stream": True,
 }
 
-role_label = " ".join([MODEL, str(TEMPERATURE)])
+model_label = "_".join([MODEL, str(TEMPERATURE)])
 
 # モデル別output設定
 if re.match(r"^gpt-4\.1", MODEL):
@@ -37,7 +37,7 @@ elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 128000
 
-    role_label = " ".join([MODEL, REASONING_EFFORT])
+    model_label = "_".join([MODEL, REASONING_EFFORT])
 elif re.match(r"^o[1-9]", MODEL):
     if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
         REASONING_EFFORT = "low"
@@ -49,7 +49,7 @@ elif re.match(r"^o[1-9]", MODEL):
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 99999
 
-    role_label = " ".join([MODEL, REASONING_EFFORT])
+    model_label = "_".join([MODEL, REASONING_EFFORT])
 
 
 # 会話履歴保存処理を関数化
@@ -57,14 +57,12 @@ def save_conversation(history, save_dir="./history"):
     os.makedirs(save_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    history_file = os.path.join(save_dir, f"{api_params['model']}_{timestamp}.md")
+    history_file = os.path.join(save_dir, f"{model_label}_{timestamp}.md")
 
     try:
         with open(history_file, "w", encoding="utf-8") as f:
             # 会話履歴の出力
             for msg in history:
-                if msg["role"] == "assistant":
-                    msg["role"] = f'{role_label} {msg["role"]}'
                 f.write(f'{msg["role"]}: {msg["content"]}\n\n')
 
         console.print(f"[bold blue]Conversation history saved to {history_file}[/bold blue]")
@@ -132,7 +130,7 @@ while True:
     try:
         completion = client.chat.completions.create(**api_params)
 
-        console.print(f"[bold green]{role_label} assistant:[/bold green]")
+        console.print(f"[bold green]{model_label} assistant:[/bold green]")
 
         completion_reply = ""
         for chunk in completion:
