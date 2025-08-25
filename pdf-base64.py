@@ -5,28 +5,33 @@ import base64
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 # ローカル画像をbase64エンコード
-with open("showa.jpg", "rb") as f:
-    img_base64 = base64.b64encode(f.read()).decode("utf-8")
+"""
+with open(".file/現地費用.pdf", "rb") as f:
+    b64 = base64.b64encode(f.read()).decode("utf-8")
+"""
 
-# API呼び出し
+with open(".file/test.pdf", "rb") as f:
+    b64 = base64.b64encode(f.read()).decode("utf-8")
+
 response = client.chat.completions.create(
-    model="gpt-4.1",  # gpt-4o / gpt-4o-mini / gpt-4.1 / gpt-5 など
+    model="gpt-4.1",
     messages=[
         {
             "role": "user",
             "content": [
                 {
                     "type": "text",
-                    "text": "この画像について説明してください",
+                    "text": "これは何？",
                 },
                 {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{img_base64}",
+                    "type": "file",
+                    "file": {
+                        "filename": "unko.pdf",
+                        "file_data": f"data:application/pdf;base64,{b64}",
                     },
                 },
             ],
-        }
+        },
     ],
 )
 
