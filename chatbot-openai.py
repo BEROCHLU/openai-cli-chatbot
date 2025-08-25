@@ -9,24 +9,20 @@ from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
 
-API_KEY = os.environ.get("OPENAI_API_KEY")  # 環境変数に設定したAPIキーを取得
 MODEL = settings.MODEL
 TEMPERATURE = settings.TEMPERATURE
 REASONING_EFFORT = settings.REASONING_EFFORT
 
-client = OpenAI(api_key=API_KEY)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))  # 環境変数に設定したAPIキーを取得
 console = Console()
-
-# 会話の初期コンテキストとして system メッセージを設定
-conversation = [
-    {"role": "system", "content": "You are a helpful assistant"},
-]
+history = []
 
 api_params = {
     "model": MODEL,
-    "messages": conversation,
+    "messages": history,
     "temperature": TEMPERATURE,
     "max_completion_tokens": 16384,  # max_tokens(Deprecated)と違い、出力トークンのみの制限
+    "stream": True,
 }
 
 role_label = " ".join([MODEL, str(TEMPERATURE)])
@@ -67,7 +63,10 @@ def save_conversation(history, save_dir="./history"):
         with open(history_file, "w", encoding="utf-8") as f:
             # 会話履歴の出力
             for msg in history:
-                f.write(f'{role_label} {msg["role"].capitalize()}: {msg["content"]}\n\n')
+                if msg["role"] == "assistant":
+                    msg["role"] = f'{role_label} {msg["role"]}'
+                f.write(f'{msg["role"]}: {msg["content"]}\n\n')
+
         console.print(f"[bold blue]Conversation history saved to {history_file}[/bold blue]")
     except Exception as e:
         console.print(f"[bold red]Failed to save conversation history: {e}[/bold red]")
@@ -76,13 +75,13 @@ def save_conversation(history, save_dir="./history"):
 # メインループ（ユーザーとの会話を処理）
 while True:
     # ユーザーからの入力を取得
-    user_input = input("User: ")
+    user_input = input("user: ")
     if not user_input:
         break
 
     # コマンド"!save"が入力された場合、その時点で会話履歴を即時保存する
     if user_input.strip() == "!save":
-        save_conversation(conversation)  # 会話を保存（会話は終了せず継続）
+        save_conversation(history)  # 会話を保存（会話は終了せず継続）
         continue  # 会話を継続するためループを続行
 
     # 質問とファイルパスを | で区切る
@@ -125,31 +124,31 @@ while True:
 
     # AIの応答を会話履歴に追加
     if file_contents:
-        conversation.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
+        history.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
     else:
-        conversation.append({"role": "user", "content": user_question})
+        history.append({"role": "user", "content": user_question})
 
     # API 呼び出し（タイムアウトや例外に備えエラーハンドリング）
     try:
-        response = client.chat.completions.create(**api_params, stream=True)
+        completion = client.chat.completions.create(**api_params)
 
-        console.print(f"[bold green]{role_label} Assistant:[/bold green]")
+        console.print(f"[bold green]{role_label} assistant:[/bold green]")
 
-        assistant_reply = ""
-        for chunk in response:
-            delta = chunk.choices[0].delta
-            if hasattr(delta, "content") and delta.content:
-                assistant_reply += delta.content
-                console.print(delta.content, end="", style="white")
+        completion_reply = ""
+        for chunk in completion:
+            if chunk.choices[0].delta.content is not None:
+                console.print(chunk.choices[0].delta.content, end="", style="white")
+                completion_reply += chunk.choices[0].delta.content
+
         console.print("\n")
 
-        conversation.append({"role": "assistant", "content": assistant_reply})
+        history.append({"role": "assistant", "content": completion_reply})
     except Exception as e:
         console.print(f"[bold red]Error occurred: {e}[/bold red]\n")
-        save_conversation(conversation)
+        save_conversation(history)
         continue
 
 
 # 最後に会話を終了する際に、履歴をファイルへ保存（会話が実質なかった場合は保存しない）
-if len(conversation) > 1:
-    save_conversation(conversation)  # 会話を最後にまとめて保存
+if len(history) > 1:
+    save_conversation(history)  # 会話を最後にまとめて保存
