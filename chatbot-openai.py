@@ -27,6 +27,7 @@ api_params = {
     "messages": conversation,
     "temperature": TEMPERATURE,
     "max_completion_tokens": 16384,  # max_tokens(Deprecated)と違い、出力トークンのみの制限
+    "stream": True,
 }
 
 role_label = " ".join([MODEL, str(TEMPERATURE)])
@@ -131,12 +132,12 @@ while True:
 
     # API 呼び出し（タイムアウトや例外に備えエラーハンドリング）
     try:
-        response = client.chat.completions.create(**api_params, stream=True)
+        completion = client.chat.completions.create(**api_params)
 
         console.print(f"[bold green]{role_label} Assistant:[/bold green]")
 
         assistant_reply = ""
-        for chunk in response:
+        for chunk in completion:
             delta = chunk.choices[0].delta
             if hasattr(delta, "content") and delta.content:
                 assistant_reply += delta.content
