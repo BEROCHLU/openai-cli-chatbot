@@ -136,15 +136,15 @@ while True:
 
         console.print(f"[bold green]{role_label} Assistant:[/bold green]")
 
-        assistant_reply = ""
+        completion_reply = ""
         for chunk in completion:
-            delta = chunk.choices[0].delta
-            if hasattr(delta, "content") and delta.content:
-                assistant_reply += delta.content
-                console.print(delta.content, end="", style="white")
+            if chunk.choices[0].delta.content is not None:
+                console.print(chunk.choices[0].delta.content, end="", style="white")
+                completion_reply += chunk.choices[0].delta.content
+
         console.print("\n")
 
-        conversation.append({"role": "assistant", "content": assistant_reply})
+        conversation.append({"role": "assistant", "content": completion_reply})
     except Exception as e:
         console.print(f"[bold red]Error occurred: {e}[/bold red]\n")
         save_conversation(conversation)
