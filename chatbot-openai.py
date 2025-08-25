@@ -34,18 +34,20 @@ role_label = " ".join([MODEL, str(TEMPERATURE)])
 # モデル別output設定
 if re.match(r"^gpt-4\.1", MODEL):
     api_params["max_completion_tokens"] = 32768
-elif re.match(r"gpt-5-chat-latest", MODEL):  # gpt-5-chat-latestはchatモデル
-    api_params["max_completion_tokens"] = 128000
+elif re.match(r"(^gpt-5-chat-latest$|^gpt-4o-mini$|^gpt-4o$)", MODEL):  # gpt-5-chat-latestはchatモデル
+    pass
 elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
     api_params["max_completion_tokens"] = 128000
-    
+
     role_label = " ".join([MODEL, REASONING_EFFORT])
 elif re.match(r"^o[1-9]", MODEL):
     if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
         REASONING_EFFORT = "low"
-        print(f'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for gpt-5 or gpt-5-mini.')
+        print(
+            f'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for gpt-5 or gpt-5-mini.'
+        )
 
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
