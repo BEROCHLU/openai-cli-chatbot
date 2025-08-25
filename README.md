@@ -30,7 +30,7 @@ Optional (recommended):
    ```
 2. **Rename `settings_example.py` to `settings.py`, then open `settings.py` and set:**
    ```bash
-   MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
+   MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-5-chat-latest | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
    TEMPERATURE = 1.0
    REASONING_EFFORT = "medium"  # low | medium | high | minimal
    ```
@@ -78,10 +78,10 @@ Assistant:
 ## Configuration
 - **MODEL**: Choose your preferred OpenAI model, such as `gpt-5`, `gpt-4.1` or `o4-mini`.
 - **TEMPERATURE**: Higher means more creativity but less reproducibility; lower means more consistency and reproducibility. To be ignored in the case of reasoning models.
-- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including gpt-5.
+- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including gpt-5 and gpt-5-mini.
 
 ## Note
 - **max_completion_tokens**: The maximum value is set depending on the model.
-- **REASONING_EFFORT = "minimal"**: To be used only for gpt-5.
+- **REASONING_EFFORT = "minimal"**: To be used only for gpt-5 or gpt-5-mini.
 ## License
 MIT
