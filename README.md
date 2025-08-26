@@ -1,103 +1,112 @@
+なるほど。いまの README は情報量は十分ですが、少し冗長で重複があるので、
+**見出しを整理**して **繰り返しを削除**、さらに **コードや例はフォーマットを統一**するとぐっと見やすくなります。
+
+以下のようにまとめ直すとスッキリします👇
+
+---
+
 # CLI Chatbot Using the OpenAI API
 
 ## Overview
-This script is a simple chatbot that interacts with users through a terminal using the OpenAI API. It maintains and saves conversation history.
+
+A simple command-line chatbot powered by the OpenAI API.
+It supports conversation history, file analysis, and instant saving.
 
 ## Features
-- Uses OpenAI API for generating responses.
-- Maintains conversation history for context-aware replies.
-- Saves conversation history to the `./history` folder.
-- Supports Excel (`.xlsx`, automatically converted to JSON), text, or image files as input using the pipe ` | ` syntax.
-- Supports text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
-- Supports image files and pdf file(`.jpg`, `.jpeg`, `.png`).
-- Supports pdf file (`.pdf`).
-- Supports instant saving of conversation history using the `!save` command without ending the session.
+
+* Conversational interface with context-aware replies
+* Conversation history saved to `./history`
+* File input via `|` operator:
+
+  * Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
+  * Excel files (`.xlsx`, automatically converted to JSON)
+  * PDF files (`.pdf`)
+  * Images (`.jpg`, `.jpeg`, `.png`)
+* Instant save using `!save` command
 
 ## Requirements
-Ensure you have the following installed:
-- Python 3.10+
-- Required Python packages:
+
+* Python 3.10+
+* Install dependencies:
+
   ```bash
   pip install -r requirements.txt
   ```
 
-Optional (recommended):
-- [Windows Terminal](https://apps.microsoft.com/detail/windows-terminal/9N0DX20HK701)  
-  Clearly renders text, prevents corrupted text, and eliminates screen artifacts.
+**Optional (Windows):**
+[Windows Terminal](https://apps.microsoft.com/detail/windows-terminal/9N0DX20HK701) for better rendering and fewer artifacts.
 
 ## Setup
-1. **Set API Key**  
-   Export your OpenAI API key as an environment variable:
+
+1. **Set API Key**
+
    ```bash
-   export OPENAI_API_KEY="your_api_key_here"
+   setx OPENAI_API_KEY "your_api_key_here"   # Windows
+   export OPENAI_API_KEY="your_api_key_here" # Linux / macOS
    ```
-2. **Rename `settings_example.py` to `settings.py`, then open `settings.py` and set:**
-   ```bash
+
+2. **Configure Settings**
+   Copy `settings_example.py` → `settings.py` and edit:
+
+   ```python
    MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-5-chat-latest | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
    TEMPERATURE = 1.0
    REASONING_EFFORT = "medium"  # low | medium | high | minimal
    ```
-3. **Run the Script**
-   - Execute the script using:
+
+3. **Run**
+
    ```bash
    python chatbot-openai.py
    ```
-   - Optional (Windows users):  
-     You may use the provided batch script (`script/wt-openai.bat`) to launch the chatbot quickly via Windows Terminal.
+
+   *(Windows users can use `script/wt-openai.bat` to launch in Windows Terminal.)*
 
 ## Usage
-Basic chat:
 
-    user: Your question
+**Basic chat**
 
-File analysis mode: (Use spaces around '|' and multiple files supported.)
-
-    user: Explain these codes | /path/to/example.py | /path/to/another_file.py
-
-Exit: Press Enter with empty input to save the conversation history to `./history` folder.
-
-Immediately save conversation history at any time:
-
-    user: !save
-
-Typing `!save` will instantly save the current conversation history without exiting.
-
-## Example Interaction
 ```plaintext
-user: ワタシは寝ないでゲームをシマス。物事の優先順位が分ってマスカラネ。
-gpt-5-chat-latest_0.65 assistant:
-ワタシのソフトウェアは“睡眠”をアンインストールしまシタ！遊ぶタメニ！
+user: Your question
+```
 
-user: Explain there files | chatbot-openai.py | settings_example.py
-Completed loading the file: 'chatbot-openai.py'
-Completed loading the file: 'settings_example.py'
-gpt-5-chat-latest_0.65 assistant:
-Great! Let’s break down what these two files are doing.  
+**File analysis** (multiple files supported, space around `|` is required)
 
-## **1. `chatbot-openai.py`**
-This is the **main script** that runs the chatbot. It connects to the OpenAI API,
-...
+```plaintext
+user: Explain this code | /path/to/example.py | /path/to/another_file.py
+```
+
+**Exit session**
+Press **Enter** on empty input → history is saved to `./history`.
+
+**Instant save**
+
+```plaintext
+user: !save
+```
+
+## Example
+
+```plaintext
+user: Explain these files | chatbot-openai.py | settings_example.py
+assistant: Great! Let’s break down what these two files are doing...
 
 user: What is this? | .file/DSC9999.JPG
-Image loaded and encoded: '.file/DSC9999.JPG'
-gpt-5-chat-latest_0.65 assistant:
-This image shows a **group of people having a meal together on a boat**.  
-
-Details:  
-- They are sitting under a canopy for shade.  
-- The boat is out on the ocean with clear blue water visible in the background.  
-- The table is full of food, including **grilled seafood, watermelon, mangoes, and other dishes**.  
-...
+assistant: This image shows a group of people having a meal together on a boat...
 ```
 
 ## Configuration
-- **MODEL**: Choose your preferred OpenAI model, such as `gpt-5`, `gpt-4.1` or `o4-mini`.
-- **TEMPERATURE**: Higher means more creativity but less reproducibility; lower means more consistency and reproducibility. To be ignored in the case of reasoning models.
-- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including `gpt-5` or `gpt-5-mini`.
 
-## Note
-- **max_completion_tokens**: The maximum value is set depending on the model.
-- **REASONING_EFFORT = "minimal"**: This value is intended for `gpt-5` or `gpt-5-mini`. If set with other reasoning models, it will be automatically changed to low.
+* **MODEL**: OpenAI model (e.g. `gpt-5`, `gpt-4.1`, `o4-mini`)
+* **TEMPERATURE**: Higher = more creative, Lower = more deterministic
+* **REASONING\_EFFORT**: Controls reasoning depth (`low` / `medium` / `high` / `minimal`)
+  *(only for reasoning models including `gpt-5`, `gpt-5-mini`)*
+
+## Notes
+
+* `max_completion_tokens` depends on the model
+* If `REASONING_EFFORT="minimal"` is set for non-`gpt-5` models, it falls back to `low`
 
 ## License
+
 MIT
