@@ -97,11 +97,12 @@ while True:
 
     # 最初の引数を質問として扱う
     user_question = args[0].strip()
-    file_contents = ""
+    lst_file_contents = []
 
     # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応・xlsx→JSON変換対応）
     if len(args) >= 2:
         file_paths = args[1:]
+
         for file_path in file_paths:
             file_path = file_path.strip()
             file_ext = os.path.splitext(file_path)[1].lower()
@@ -113,14 +114,15 @@ while True:
                     json_data = {sheet: df.to_dict(orient="records") for sheet, df in sheets_dict.items()}
                     json_str = json.dumps(json_data, ensure_ascii=False, indent=2)
 
-                    file_contents += f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n"
-                    file_contents += json_str
+                    file_content = f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n"
+                    file_content += json_str
 
-                    file_contents = {
+                    file_content = {
                         "type": "text",
-                        "text": file_contents,
+                        "text": file_content,
                     }
 
+                    lst_file_contents.append(file_content)
                     console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
                 elif file_ext in [".jpg", ".jpeg", ".png"]:
@@ -129,24 +131,26 @@ while True:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
 
                     mime_type = "image/jpeg" if file_ext in [".jpg", ".jpeg"] else "image/png"
-                    file_contents = {
+                    file_content = {
                         "type": "image_url",
                         "image_url": {"url": f"data:{mime_type};base64,{b64}"},
                     }
 
+                    lst_file_contents.append(file_content)
                     console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
 
                 else:
                     # 通常ファイルはそのまま処理
                     with open(file_path, "r", encoding="utf-8") as file:
-                        file_contents += f"\n\n--- File: {file_path} ---\n\n"
-                        file_contents += file.read()
+                        file_content = f"\n\n--- File: {file_path} ---\n\n"
+                        file_content += file.read()
 
-                    file_contents = {
+                    file_content = {
                         "type": "text",
-                        "text": file_contents,
+                        "text": file_content,
                     }
 
+                    lst_file_contents.append(file_content)
                     console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
 
             except Exception as e:
@@ -154,15 +158,16 @@ while True:
                 break
 
     # AIの応答を会話履歴に追加
-    if file_contents:
+    if lst_file_contents:
 
         user_contents = [
             {
                 "type": "text",
                 "text": user_question,
-            },
-            file_contents,
+            }
         ]
+        
+        user_contents.extend(lst_file_contents)
         history.append({"role": "user", "content": user_contents})
         # history.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
     else:
