@@ -8,7 +8,7 @@ This script is a simple chatbot that interacts with users through a terminal usi
 - Maintains conversation history for context-aware replies.
 - Saves conversation history to the `./history` folder.
 - Supports Excel (`.xlsx`, automatically converted to JSON), text, or image files as input using the pipe ` | ` syntax.
-- Supports text-based files (e.g., `.txt`, `.csv`, `.json`, `.py`, `.md`, etc.)
+- Supports text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
 - Supports image files (`.jpg`, `.jpeg`, `.png`).
 - Supports instant saving of conversation history using the `!save` command without ending the session.
 
