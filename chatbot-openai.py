@@ -183,7 +183,6 @@ while True:
                 completion_reply += chunk.choices[0].delta.content
 
         console.print("\n")
-
         history.append({"role": "assistant", "content": completion_reply})
     except Exception as e:
         console.print(f"[bold red]Error occurred: {e}[/bold red]\n")
