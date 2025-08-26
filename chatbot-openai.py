@@ -6,6 +6,7 @@ import json
 import base64
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
@@ -105,7 +106,8 @@ while True:
 
         for file_path in file_paths:
             file_path = file_path.strip()
-            file_ext = os.path.splitext(file_path)[1].lower()
+            file_name = Path(file_path).name
+            file_ext = Path(file_path).suffix
 
             try:
                 if file_ext == ".xlsx":
@@ -125,7 +127,7 @@ while True:
                     console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
                 elif file_ext in [".jpg", ".jpeg", ".png"]:
-                    # 画像場合はbase64に変換
+                    # base64に変換
                     with open(file_path, "rb") as f:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -136,6 +138,21 @@ while True:
                     }
 
                     console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
+
+                elif file_ext == ".pdf":
+                    # base64に変換
+                    with open(file_path, "rb") as f:
+                        b64 = base64.b64encode(f.read()).decode("utf-8")
+
+                    file_content = {
+                        "type": "file",
+                        "file": {
+                            "filename": file_name,
+                            "file_data": f"data:application/pdf;base64,{b64}",
+                        },
+                    }
+
+                    console.print(f"[bold orange1]pdf loaded and encoded: '{file_path}'[/bold orange1]")
 
                 else:
                     # 通常ファイルはそのまま処理
