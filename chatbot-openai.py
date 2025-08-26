@@ -37,11 +37,11 @@ api_params = {
 
 model_label = "_".join([MODEL, str(TEMPERATURE)])
 
-# モデル別output設定
-if re.match(r"^gpt-4\.1", MODEL):
-    api_params["max_completion_tokens"] = 32768
-elif re.match(r"(^gpt-5-chat-latest$|^gpt-4o-mini$|^gpt-4o$)", MODEL):  # gpt-5-chat-latestはchatモデル
+# モデル別api_params設定
+if re.match(r"(^gpt-5-chat-latest$|^gpt-4o)", MODEL):  # gpt-5-chat-latestはchatモデル
     pass
+elif re.match(r"^gpt-4\.1", MODEL):
+    api_params["max_completion_tokens"] = 32768
 elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
     api_params["temperature"] = 1.0
     api_params["reasoning_effort"] = REASONING_EFFORT
@@ -122,7 +122,6 @@ while True:
                         "text": file_content,
                     }
 
-                    lst_file_contents.append(file_content)
                     console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
                 elif file_ext in [".jpg", ".jpeg", ".png"]:
@@ -136,7 +135,6 @@ while True:
                         "image_url": {"url": f"data:{mime_type};base64,{b64}"},
                     }
 
-                    lst_file_contents.append(file_content)
                     console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
 
                 else:
@@ -150,14 +148,15 @@ while True:
                         "text": file_content,
                     }
 
-                    lst_file_contents.append(file_content)
                     console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
+                # if文が終わったらfile_contentをappend
+                lst_file_contents.append(file_content)
 
             except Exception as e:
                 console.print(f"[bold red]Error processing file '{file_path}': {e}[/bold red]")
                 break
 
-    # AIの応答を会話履歴に追加
+    # role: userのcontentを作成
     if lst_file_contents:
 
         user_contents = [
@@ -166,10 +165,9 @@ while True:
                 "text": user_question,
             }
         ]
-        
+
         user_contents.extend(lst_file_contents)
         history.append({"role": "user", "content": user_contents})
-        # history.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
     else:
         history.append({"role": "user", "content": user_question})
 
