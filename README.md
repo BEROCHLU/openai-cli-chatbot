@@ -51,7 +51,7 @@ Basic chat:
 
 File analysis mode: (Use spaces around '|' and multiple files supported.)
 
-    User: Explain this code | /path/to/example.py | /path/to/another_file.py
+    User: Explain these codes | /path/to/example.py | /path/to/another_file.py
 
 Exit: Press Enter with empty input to save the conversation history to `./history` folder.
 
@@ -77,8 +77,8 @@ Great! Let’s break down what these two files are doing.
 This is the **main script** that runs the chatbot. It connects to the OpenAI API,
 ...
 
-user: What is this? | .file/DSC0507.JPG
-Image loaded and encoded: '.file/DSC0507.JPG'
+user: What is this? | .file/DSC9999.JPG
+Image loaded and encoded: '.file/DSC9999.JPG'
 gpt-5-chat-latest_0.65 assistant:
 This image shows a **group of people having a meal together on a boat**.  
 
@@ -86,12 +86,7 @@ Details:
 - They are sitting under a canopy for shade.  
 - The boat is out on the ocean with clear blue water visible in the background.  
 - The table is full of food, including **grilled seafood, watermelon, mangoes, and other dishes**.  
-- Several people are shirtless, suggesting it’s a casual beach or island trip.  
-- They appear to be enjoying a feast, some giving thumbs-up signs and posing for the camera.  
-
-So overall, this looks like a **seafood and fruit feast on a boat trip** — likely part of an island-hopping or beach outing. 🌊🍉🦐  
-
-Would you like me to describe the **types of food on the table in more detail**?
+...
 ```
 
 ## Configuration
