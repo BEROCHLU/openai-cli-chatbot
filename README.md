@@ -47,17 +47,17 @@ Optional (recommended):
 ## Usage
 Basic chat:
 
-    User: Your question
+    user: Your question
 
 File analysis mode: (Use spaces around '|' and multiple files supported.)
 
-    User: Explain these codes | /path/to/example.py | /path/to/another_file.py
+    user: Explain these codes | /path/to/example.py | /path/to/another_file.py
 
 Exit: Press Enter with empty input to save the conversation history to `./history` folder.
 
 Immediately save conversation history at any time:
 
-    User: !save
+    user: !save
 
 Typing `!save` will instantly save the current conversation history without exiting.
 
@@ -92,11 +92,11 @@ Details:
 ## Configuration
 - **MODEL**: Choose your preferred OpenAI model, such as `gpt-5`, `gpt-4.1` or `o4-mini`.
 - **TEMPERATURE**: Higher means more creativity but less reproducibility; lower means more consistency and reproducibility. To be ignored in the case of reasoning models.
-- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including `gpt-5` and `gpt-5-mini`.
+- **REASONING_EFFORT**: Higher means the model will take more time to process your request, and the more tokens it will consume. This parameter is only for reasoning models, including `gpt-5` or `gpt-5-mini`.
 
 ## Note
 - **max_completion_tokens**: The maximum value is set depending on the model.
-- **REASONING_EFFORT = "minimal"**: This value is intended for `gpt-5` and `gpt-5-mini`. If set with other reasoning models, it will be automatically changed to low.
+- **REASONING_EFFORT = "minimal"**: This value is intended for `gpt-5` or `gpt-5-mini`. If set with other reasoning models, it will be automatically changed to low.
 
 ## License
 MIT
