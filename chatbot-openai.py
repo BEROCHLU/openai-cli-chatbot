@@ -3,6 +3,7 @@ import os
 import re
 import settings
 import json
+import base64
 import pandas as pd
 from datetime import datetime
 from openai import OpenAI
@@ -15,7 +16,16 @@ REASONING_EFFORT = settings.REASONING_EFFORT
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))  # 環境変数に設定したAPIキーを取得
 console = Console()
-history = []
+history = [
+    {
+        "role": "system",
+        "content": (
+            "You are a helpful assistant. "
+            "Since the conversation will be saved in Markdown format, "
+            "make your responses well-structured and easy to read in Markdown."
+        ),
+    }
+]
 
 api_params = {
     "model": MODEL,
@@ -42,7 +52,7 @@ elif re.match(r"^o[1-9]", MODEL):
     if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
         REASONING_EFFORT = "low"
         print(
-            f'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for gpt-5 or gpt-5-mini.'
+            'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for gpt-5 or gpt-5-mini.'
         )
 
     api_params["temperature"] = 1.0
@@ -106,13 +116,36 @@ while True:
                     file_contents += f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n"
                     file_contents += json_str
 
+                    file_contents = {
+                        "type": "text",
+                        "text": file_contents,
+                    }
+
                     console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
+
+                elif file_ext in [".jpg", ".jpeg", ".png"]:
+                    # 画像場合はbase64に変換
+                    with open(file_path, "rb") as f:
+                        b64 = base64.b64encode(f.read()).decode("utf-8")
+
+                    mime_type = "image/jpeg" if file_ext in [".jpg", ".jpeg"] else "image/png"
+                    file_contents = {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{mime_type};base64,{b64}"},
+                    }
+
+                    console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
 
                 else:
                     # 通常ファイルはそのまま処理
                     with open(file_path, "r", encoding="utf-8") as file:
                         file_contents += f"\n\n--- File: {file_path} ---\n\n"
                         file_contents += file.read()
+
+                    file_contents = {
+                        "type": "text",
+                        "text": file_contents,
+                    }
 
                     console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
 
@@ -122,14 +155,22 @@ while True:
 
     # AIの応答を会話履歴に追加
     if file_contents:
-        history.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
+
+        user_contents = [
+            {
+                "type": "text",
+                "text": user_question,
+            },
+            file_contents,
+        ]
+        history.append({"role": "user", "content": user_contents})
+        # history.append({"role": "user", "content": f"{user_question}\n\n{file_contents}"})
     else:
         history.append({"role": "user", "content": user_question})
 
-    # API 呼び出し（タイムアウトや例外に備えエラーハンドリング）
+    # API 呼び出し
     try:
         completion = client.chat.completions.create(**api_params)
-
         console.print(f"[bold green]{model_label} assistant:[/bold green]")
 
         completion_reply = ""
