@@ -184,7 +184,7 @@ while True:
         ]
 
         user_contents.extend(lst_file_contents)
-        history.append({"role": "user", "content": user_contents})
+        history.append({"role": "user", "content": user_contents}) # type: ignore
     else:
         history.append({"role": "user", "content": user_question})
 
