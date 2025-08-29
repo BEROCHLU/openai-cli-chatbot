@@ -1,14 +1,16 @@
 #!/usr/bin/env python
+import base64
+import json
 import os
 import re
-import settings
-import json
-import base64
-import pandas as pd
 from datetime import datetime
 from pathlib import Path
+
+import pandas as pd
 from openai import OpenAI
 from rich.console import Console
+
+import settings
 
 MODEL = settings.MODEL
 TEMPERATURE = settings.TEMPERATURE
@@ -67,7 +69,7 @@ def save_conversation(history, save_dir="./history"):
     os.makedirs(save_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    history_file = os.path.join(save_dir, f"{model_label}_{timestamp}.md")
+    history_file = Path(save_dir) / f"{model_label}_{timestamp}.md"
 
     try:
         with open(history_file, "w", encoding="utf-8") as f:
@@ -183,7 +185,7 @@ while True:
         ]
 
         user_contents.extend(lst_file_contents)
-        history.append({"role": "user", "content": user_contents}) # type: ignore
+        history.append({"role": "user", "content": user_contents})  # type: ignore
     else:
         history.append({"role": "user", "content": user_question})
 
