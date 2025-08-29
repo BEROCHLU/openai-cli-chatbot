@@ -43,7 +43,7 @@ def get_api_params(model: str, temperature: float, reasoning_effort: str) -> dic
     if re.match(r"^gpt-4\.1", model):
         params["max_completion_tokens"] = 32768
 
-    # gpt-5 系 (chat 以外)
+    # gpt-5 系 (chat-latestを除く)
     elif re.match(r"^gpt-5(?!-chat)", model):
         params.update(
             {
@@ -67,18 +67,15 @@ def get_api_params(model: str, temperature: float, reasoning_effort: str) -> dic
     return params
 
 
-# ─── 3. API パラメータ取得 ＆ model_label 設定 ────────────────────
+# ─── API パラメータ取得 ＆ model_label 設定 ────────────────────
 api_params = get_api_params(MODEL, TEMPERATURE, REASONING_EFFORT)
-
+# 推論モデルなら model + reasoning_effort
 if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
-    # 推論モデルなら model + reasoning_effort
     model_label = "-".join([MODEL, REASONING_EFFORT])
 else:
-    # それ以外はモデル名だけ
     model_label = MODEL
 
 
-# 会話履歴保存処理を関数化
 def save_conversation(history, save_dir="./history"):
     os.makedirs(save_dir, exist_ok=True)
 
@@ -142,7 +139,7 @@ while True:
                     console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
                 elif file_ext in [".jpg", ".jpeg", ".png"]:
-                    # base64に変換
+                    # 画像はbase64に変換
                     with open(file_path, "rb") as f:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -155,7 +152,7 @@ while True:
                     console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
 
                 elif file_ext == ".pdf":
-                    # base64に変換
+                    # pdfもbase64に変換
                     with open(file_path, "rb") as f:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
 
