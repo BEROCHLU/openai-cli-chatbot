@@ -9,13 +9,12 @@ from datetime import datetime
 from pathlib import Path
 from openai import OpenAI
 from rich.console import Console
-from rich.markdown import Markdown
 
 MODEL = settings.MODEL
 TEMPERATURE = settings.TEMPERATURE
 REASONING_EFFORT = settings.REASONING_EFFORT
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))  # 環境変数に設定したAPIキーを取得
+client = OpenAI()
 console = Console()
 history = [
     {
@@ -93,8 +92,8 @@ while True:
         save_conversation(history)  # 会話を保存（会話は終了せず継続）
         continue  # 会話を継続するためループを続行
 
-    # 質問とファイルパスを | で区切る
-    args = user_input.split(" | ")
+    # 質問とファイルパスを ^ で区切る
+    args = user_input.split(" ^ ")
 
     # 最初の引数を質問として扱う
     user_question = args[0].strip()

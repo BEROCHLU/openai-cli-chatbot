@@ -9,7 +9,7 @@ It supports conversation history, file analysis, and instant saving.
 
 * Conversational interface with context-aware replies
 * Conversation history saved to `./history`
-* File input via `|` operator:
+* File input via `^` operator:
 
   * Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   * Excel files (`.xlsx`, automatically converted to JSON)
@@ -63,10 +63,10 @@ It supports conversation history, file analysis, and instant saving.
 user: Your question
 ```
 
-**File analysis** (multiple files supported, space around `|` is required)
+**File analysis** (multiple files supported, space around `^` is required)
 
 ```plaintext
-user: Explain this code | /path/to/example.py | /path/to/another_file.py
+user: Explain this code ^ /path/to/example.py ^ /path/to/another_file.py
 ```
 
 **Exit session**
@@ -81,10 +81,10 @@ user: !save
 ## Example
 
 ```plaintext
-user: Explain these files | chatbot-openai.py | settings_example.py
+user: Explain these files ^ chatbot-openai.py ^ settings_example.py
 assistant: Great! Let’s break down what these two files are doing...
 
-user: What is this? | .file/DSC9999.JPG
+user: What is this? ^ .file/DSC9999.JPG
 assistant: This image shows a group of people having a meal together on a boat...
 ```
 
