@@ -1,21 +1,22 @@
 #!/usr/bin/env python
+import base64
+import json
 import os
 import re
-import settings
-import json
-import base64
-import pandas as pd
 from datetime import datetime
 from pathlib import Path
+
+import pandas as pd
 from openai import OpenAI
 from rich.console import Console
-from rich.markdown import Markdown
+
+import settings
 
 MODEL = settings.MODEL
 TEMPERATURE = settings.TEMPERATURE
 REASONING_EFFORT = settings.REASONING_EFFORT
 
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))  # 環境変数に設定したAPIキーを取得
+client = OpenAI()
 console = Console()
 history = [
     {
@@ -28,39 +29,53 @@ history = [
     }
 ]
 
-api_params = {
-    "model": MODEL,
-    "messages": history,
-    "temperature": TEMPERATURE,
-    "max_completion_tokens": 16384,  # max_tokens(Deprecated)と違い、出力トークンのみの制限
-    "stream": True,
-}
 
-model_label = "_".join([MODEL, str(TEMPERATURE)])
+def get_api_params(model: str, temperature: float, reasoning_effort: str) -> dict:
+    params = {
+        "model": model,
+        "messages": history,
+        "temperature": temperature,
+        "max_completion_tokens": 16384,
+        "stream": True,
+    }
 
-# モデル別api_params設定
-if re.match(r"(^gpt-5-chat-latest$|^gpt-4o)", MODEL):  # gpt-5-chat-latestはchatモデル
-    pass
-elif re.match(r"^gpt-4\.1", MODEL):
-    api_params["max_completion_tokens"] = 32768
-elif re.match(r"^gpt-5", MODEL):  # gpt-5は推論モデル
-    api_params["temperature"] = 1.0
-    api_params["reasoning_effort"] = REASONING_EFFORT
-    api_params["max_completion_tokens"] = 128000
+    # gpt-4.1 系
+    if re.match(r"^gpt-4\.1", model):
+        params["max_completion_tokens"] = 32768
 
-    model_label = "_".join([MODEL, REASONING_EFFORT])
-elif re.match(r"^o[1-9]", MODEL):
-    if REASONING_EFFORT == "minimal":  # minimalはgpt-5のみ有効
-        REASONING_EFFORT = "low"
-        print(
-            'The parameter reasoning.effort was changed to "low" because "minimal" is reserved for gpt-5 or gpt-5-mini.'
+    # gpt-5 系 (chat 以外)
+    elif re.match(r"^gpt-5(?!-chat)", model):
+        params.update(
+            {
+                "temperature": 1.0,
+                "reasoning_effort": reasoning_effort,
+                "max_completion_tokens": 128000,
+            }
         )
 
-    api_params["temperature"] = 1.0
-    api_params["reasoning_effort"] = REASONING_EFFORT
-    api_params["max_completion_tokens"] = 99999
+    # o1～o9
+    elif re.match(r"^o[1-9]", model):
+        eff = "low" if reasoning_effort == "minimal" else reasoning_effort
+        params.update(
+            {
+                "temperature": 1.0,
+                "reasoning_effort": eff,
+                "max_completion_tokens": 100000,
+            }
+        )
 
-    model_label = "_".join([MODEL, REASONING_EFFORT])
+    return params
+
+
+# ─── 3. API パラメータ取得 ＆ model_label 設定 ────────────────────
+api_params = get_api_params(MODEL, TEMPERATURE, REASONING_EFFORT)
+
+if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
+    # 推論モデルなら model + reasoning_effort
+    model_label = "-".join([MODEL, REASONING_EFFORT])
+else:
+    # それ以外はモデル名だけ
+    model_label = MODEL
 
 
 # 会話履歴保存処理を関数化
@@ -68,7 +83,7 @@ def save_conversation(history, save_dir="./history"):
     os.makedirs(save_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    history_file = os.path.join(save_dir, f"{model_label}_{timestamp}.md")
+    history_file = Path(save_dir) / f"{model_label}_{timestamp}.md"
 
     try:
         with open(history_file, "w", encoding="utf-8") as f:
@@ -93,8 +108,8 @@ while True:
         save_conversation(history)  # 会話を保存（会話は終了せず継続）
         continue  # 会話を継続するためループを続行
 
-    # 質問とファイルパスを | で区切る
-    args = user_input.split(" | ")
+    # 質問とファイルパスを ^ で区切る
+    args = user_input.split(" ^ ")
 
     # 最初の引数を質問として扱う
     user_question = args[0].strip()
@@ -107,7 +122,7 @@ while True:
         for file_path in file_paths:
             file_path = file_path.strip()
             file_name = Path(file_path).name
-            file_ext = Path(file_path).suffix
+            file_ext = Path(file_path).suffix.lower()
 
             try:
                 if file_ext == ".xlsx":
@@ -154,8 +169,7 @@ while True:
 
                     console.print(f"[bold orange1]pdf loaded and encoded: '{file_path}'[/bold orange1]")
 
-                else:
-                    # 通常ファイルはそのまま処理
+                else:  # text-based
                     with open(file_path, "r", encoding="utf-8") as file:
                         file_content = f"\n\n--- File: {file_path} ---\n\n"
                         file_content += file.read()
@@ -184,12 +198,13 @@ while True:
         ]
 
         user_contents.extend(lst_file_contents)
-        history.append({"role": "user", "content": user_contents})
+        history.append({"role": "user", "content": user_contents})  # type: ignore
     else:
         history.append({"role": "user", "content": user_question})
 
     # API 呼び出し
     try:
+        api_params["messages"] = history  # 念のためにhistoryを追加
         completion = client.chat.completions.create(**api_params)
         console.print(f"[bold green]{model_label} assistant:[/bold green]")
 
