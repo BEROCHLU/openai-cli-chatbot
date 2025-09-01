@@ -23,7 +23,12 @@ def main():
             input=[
                 {
                     "role": "user",
-                    "content": user_input,
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": user_input,
+                        }
+                    ],
                 }
             ],
             previous_response_id=response_id,
