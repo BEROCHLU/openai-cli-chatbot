@@ -9,36 +9,40 @@ def main():
     console = Console()
 
     response_id = None
+    messages = [
+        {
+            "role": "developer",
+            "content": (
+                "You are a helpful assistant."
+                "Since the conversation will be saved in Markdown format,"
+                "make your responses well-structured and easy to read in Markdown."
+            ),
+        }
+    ]
 
     while True:
         user_input = input("user: ").strip()
         if not user_input:
             break
 
+        messages.append(
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "input_text",
+                        "text": user_input,
+                    }
+                ],
+            }
+        )
+
         response = client.responses.create(
             model="gpt-5-chat-latest",
             temperature=0.5,
             max_output_tokens=16384,
             stream=False,
-            input=[
-                {
-                    "role": "developer",
-                    "content": (
-                        "You are a helpful assistant."
-                        "Since the conversation will be saved in Markdown format,"
-                        "make your responses well-structured and easy to read in Markdown."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": user_input,
-                        }
-                    ],
-                },
-            ],
+            input=messages,
             previous_response_id=response_id,
         )
 
