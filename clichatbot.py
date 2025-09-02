@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import re
+from typing import Optional
 from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
 
 
-def get_api_params(messages: str, model: str, temperature: float, effort: str, response_id: str) -> dict:
+def get_api_params(messages: list, model: str, temperature: float, effort: str, response_id: Optional[str]) -> dict:
     # 基本パラメータ
     params = {
         "input": messages,
