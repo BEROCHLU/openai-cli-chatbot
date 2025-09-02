@@ -11,11 +11,18 @@ def get_api_params(messages: str, model: str, temperature: float, effort: str, r
         "input": messages,
         "model": model,
         "temperature": temperature,
-        "reasoning": {"effort": effort},
         "max_output_tokens": 16384,
         "stream": False,
-        "previous_response_id": response_id,
     }
+
+    if not response_id:  # 初回
+        params["instructions"] = (
+            "You are a helpful assistant. "
+            "Since the conversation will be saved in Markdown format, "
+            "make your responses well-structured and easy to read in Markdown."
+        )
+    else:
+        params["previous_response_id"] = response_id
 
     # gpt-4.1 系
     if re.match(r"^gpt-4\.1", model):
@@ -26,8 +33,8 @@ def get_api_params(messages: str, model: str, temperature: float, effort: str, r
         params.update(
             {
                 "temperature": 1.0,
-                "reasoning": {"effort": effort},
                 "max_output_tokens": 128000,
+                "reasoning": {"effort": effort},
             }
         )
 
@@ -37,8 +44,8 @@ def get_api_params(messages: str, model: str, temperature: float, effort: str, r
         params.update(
             {
                 "temperature": 1.0,
-                "reasoning": {"effort": eff},
                 "max_output_tokens": 100000,
+                "reasoning": {"effort": eff},
             }
         )
 
@@ -50,23 +57,13 @@ def main():
     console = Console()
 
     response_id = None
-    messages = [
-        {
-            "role": "developer",
-            "content": (
-                "You are a helpful assistant."
-                "Since the conversation will be saved in Markdown format,"
-                "make your responses well-structured and easy to read in Markdown."
-            ),
-        }
-    ]
 
     while True:
         user_input = input("user: ").strip()
         if not user_input:
             break
 
-        messages.append(
+        messages = [
             {
                 "role": "user",
                 "content": [
@@ -76,7 +73,7 @@ def main():
                     }
                 ],
             }
-        )
+        ]
 
         api_params = get_api_params(messages, "gpt-5-mini", 0.5, "low", response_id)
         response = client.responses.create(**api_params)
