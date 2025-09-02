@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
+import os
 import re
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
+
 from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
+
+client = OpenAI()
+console = Console()
 
 
 def get_api_params(messages: list, model: str, temperature: float, effort: str, response_id: Optional[str]) -> dict:
@@ -53,16 +60,42 @@ def get_api_params(messages: list, model: str, temperature: float, effort: str, 
     return params
 
 
-def main():
-    client = OpenAI()
-    console = Console()
+def save_transcript(transcript, save_dir="./history"):
+    os.makedirs(save_dir, exist_ok=True)
 
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    history_file = Path(save_dir) / f"{timestamp}.md"
+
+    try:
+        with open(history_file, "w", encoding="utf-8") as f:
+            # 会話履歴の出力
+            for speaker in transcript:
+                f.write(f"user: {speaker['user']}\nassistant: {speaker['assistant']}\n")
+
+        console.print(f"[bold blue]Conversation history saved to {history_file}[/bold blue]")
+    except Exception as e:
+        console.print(f"[bold red]Failed to save conversation history: {e}[/bold red]")
+
+
+def main():
     response_id = None
+    transcript = []  # 会話ログ（ローカル保持用）
 
     while True:
         user_input = input("user: ").strip()
         if not user_input:
             break
+
+        developer_prompt = [
+            {
+                "role": "developer",
+                "content": (
+                    "You are a helpful assistant. "
+                    "Since the conversation will be saved in Markdown format, "
+                    "make your responses well-structured and easy to read in Markdown."
+                ),
+            }
+        ]
 
         messages = [
             {
@@ -76,12 +109,24 @@ def main():
             }
         ]
 
-        api_params = get_api_params(messages, "gpt-5-mini", 0.5, "low", response_id)
+        if not response_id:
+            messages = developer_prompt + messages
+
+        # コマンド"!save"が入力された場合、その時点で会話履歴を即時保存する
+        if user_input.strip() == "!save":
+            save_transcript(transcript)  # 会話を保存（会話は終了せず継続）
+            continue  # 会話を継続するためループを続行
+
+        api_params = get_api_params(messages, "gpt-5-nano", 0.5, "medium", response_id)
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]assistant[/bold green]:")
         console.print(Markdown(response.output_text))
+
         response_id = response.id
+        transcript.append({"user": user_input, "assistant": response.output_text})
+    # while True
+    save_transcript(transcript)
 
 
 if __name__ == "__main__":
