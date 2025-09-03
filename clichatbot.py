@@ -22,7 +22,7 @@ def get_api_params(messages: list, model: str, temperature: float, effort: str, 
         "model": model,
         "temperature": temperature,
         "max_output_tokens": 16384,
-        "stream": False,
+        "stream": True,
         "previous_response_id": response_id,
     }
 
@@ -124,10 +124,14 @@ def main():
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
-        console.print(Markdown(response.output_text))
-
-        response_id = response.id
-        transcript.append({"user": user_input, "assistant": response.output_text})
+        # console.print(Markdown(response.output_text))
+        for event in response:
+            if event.type == "response.output_text.delta":
+                console.print(event.delta, end="")
+            elif event.type == "response.completed":
+                console.print("")
+                response_id = event.response.id
+                transcript.append({"user": user_input, "assistant": event.response.output_text})
     # while True
     save_transcript(transcript, MODEL_LABEL)
 
