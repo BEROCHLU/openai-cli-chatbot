@@ -15,9 +15,7 @@ client = OpenAI()
 console = Console()
 
 
-def get_api_params(
-    messages: list, model: str, temperature: float, effort: Optional[str], response_id: Optional[str]
-) -> dict:
+def get_api_params(messages: list, model: str, temperature: float, effort: str, response_id: Optional[str]) -> dict:
     # 基本パラメータ
     params = {
         "input": messages,
@@ -27,10 +25,7 @@ def get_api_params(
         "stream": False,
         "previous_response_id": response_id,
     }
-    """
-    if response_id:
-        params["previous_response_id"] = response_id
-    """
+
     # gpt-4.1 系
     if re.match(r"^gpt-4\.1", model):
         params["max_output_tokens"] = 32768
@@ -89,22 +84,21 @@ def main():
 
     response_id = None
     transcript = []  # 会話ログ（ローカル保持用）
+    developer_prompt = [
+        {
+            "role": "developer",
+            "content": (
+                "You are a helpful assistant. "
+                "Since the conversation will be saved in Markdown format, "
+                "make your responses well-structured and easy to read in Markdown."
+            ),
+        }
+    ]
 
     while True:
         user_input = input("user: ").strip()
         if not user_input:
             break
-
-        developer_prompt = [
-            {
-                "role": "developer",
-                "content": (
-                    "You are a helpful assistant. "
-                    "Since the conversation will be saved in Markdown format, "
-                    "make your responses well-structured and easy to read in Markdown."
-                ),
-            }
-        ]
 
         messages = [
             {
@@ -129,7 +123,7 @@ def main():
         api_params = get_api_params(messages, MODEL, TEMPERATURE, REASONING_EFFORT, response_id)
         response = client.responses.create(**api_params)
 
-        console.print(f"[bold green]assistant[/bold green]:")
+        console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
         console.print(Markdown(response.output_text))
 
         response_id = response.id
