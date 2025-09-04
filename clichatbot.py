@@ -15,14 +15,16 @@ client = OpenAI()
 console = Console()
 
 
-def get_api_params(messages: list, model: str, temperature: float, effort: str, response_id: Optional[str]) -> dict:
+def get_api_params(
+    messages: list, model: str, temperature: float, stream: bool, effort: str, response_id: Optional[str]
+) -> dict:
     # 基本パラメータ
     params = {
         "input": messages,
         "model": model,
         "temperature": temperature,
         "max_output_tokens": 16384,
-        "stream": True,
+        "stream": stream,
         "previous_response_id": response_id,
     }
 
@@ -74,6 +76,7 @@ def save_transcript(transcript: list, model_label: str, save_dir="./history") ->
 def main():
     MODEL: str = settings.MODEL
     TEMPERATURE: float = settings.TEMPERATURE
+    STREAM: bool = settings.STREAM
     REASONING_EFFORT: Optional[str] = settings.REASONING_EFFORT
 
     # 推論モデルなら model + reasoning_effort
@@ -120,18 +123,23 @@ def main():
             save_transcript(transcript, MODEL_LABEL)
             continue  # 会話を継続するためループを続行
 
-        api_params = get_api_params(messages, MODEL, TEMPERATURE, REASONING_EFFORT, response_id)
+        api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id)
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
-        # console.print(Markdown(response.output_text))
-        for event in response:
-            if event.type == "response.output_text.delta":
-                console.print(event.delta, end="")
-            elif event.type == "response.completed":
-                console.print("")
-                response_id = event.response.id
-                transcript.append({"user": user_input, "assistant": event.response.output_text})
+
+        if STREAM:
+            for event in response:
+                if event.type == "response.output_text.delta":
+                    console.print(event.delta, end="")
+                elif event.type == "response.completed":
+                    console.print("")
+                    response_id = event.response.id
+                    transcript.append({"user": user_input, "assistant": event.response.output_text})
+        else:
+            console.print(Markdown(response.output_text))
+            response_id = response.id
+            transcript.append({"user": user_input, "assistant": response.output_text})
     # while True
     save_transcript(transcript, MODEL_LABEL)
 
