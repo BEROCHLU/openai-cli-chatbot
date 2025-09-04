@@ -184,6 +184,7 @@ def main():
 
         args = user_input.split(" ^ ")  # 質問とファイルパスを ^ で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
+        user_index = 0
 
         messages = [
             {
@@ -199,12 +200,13 @@ def main():
 
         if response_id is None:
             messages = developer_prompt + messages
+            user_index = 1
 
         # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応）
         if len(args) >= 2:
             file_paths = args[1:]
             lst_filecontents = attach_filecontents(file_paths)
-            messages[1]["content"].extend(lst_filecontents)  # type: ignore
+            messages[user_index]["content"].extend(lst_filecontents)  # type: ignore
 
         api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id)
         response = client.responses.create(**api_params)
