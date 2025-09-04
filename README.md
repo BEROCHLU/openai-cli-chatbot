@@ -1,9 +1,10 @@
-# CLI Chatbot Using the OpenAI API
+# CLI Chatbot Using the OpenAI Responses API
 
 ## Overview
 
-A simple command-line chatbot powered by the OpenAI API.
+A simple command-line chatbot powered by the OpenAI Responses API.
 It supports conversation history, file analysis, and instant saving.
+Uses event streaming and `previous_response_id` to maintain context.
 
 ## Features
 
@@ -44,13 +45,14 @@ It supports conversation history, file analysis, and instant saving.
    ```python
    MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-5-chat-latest | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
    TEMPERATURE = 1.0
+   STREAM = True     # True | False (Responses streaming)
    REASONING_EFFORT = "medium"  # low | medium | high | minimal
    ```
 
 3. **Run**
 
    ```bash
-   python chatbot-openai.py
+   python clichatbot.py
    ```
 
    *(Windows users can use `script/wt-openai.bat` to launch in Windows Terminal.)*
@@ -81,7 +83,7 @@ user: !save
 ## Example
 
 ```plaintext
-user: Explain these files ^ chatbot-openai.py ^ settings_example.py
+user: Explain these files ^ clichatbot.py ^ settings_example.py
 assistant: Great! Let’s break down what these two files are doing...
 
 user: What is this? ^ .file/DSC9999.JPG
@@ -92,13 +94,19 @@ assistant: This image shows a group of people having a meal together on a boat..
 
 * **MODEL**: OpenAI model (e.g. `gpt-5`, `gpt-4.1`, `o4-mini`)
 * **TEMPERATURE**: Higher = more creative, Lower = more deterministic
+* **STREAM**: Stream output if `True`; print once if `False`
 * **REASONING\_EFFORT**: Controls reasoning depth (`low` / `medium` / `high` / `minimal`)
-  *(only for reasoning models including `gpt-5`, `gpt-5-mini`)*
+  *(primarily used by reasoning-capable models such as `gpt-5`, `o3+`)*
 
 ## Notes
 
-* `max_completion_tokens` depends on the model
-* If `REASONING_EFFORT="minimal"` is set for non-`gpt-5` models, it falls back to `low`
+* `max_output_tokens` (Responses API) depends on the model.
+* Reasoning usage:
+  - `gpt-5` (excluding `-chat-latest`): uses `reasoning.effort` as specified.
+  - `o3–o9`: uses `reasoning.effort`; when `minimal` is specified it falls back to `low`.
+  - `gpt-4.1`/`gpt-4.1-mini`: no reasoning; only token limits adjust.
+
+* Tip: Set `STREAM=False` to get a single Markdown-rendered reply per turn.
 
 ## License
 
