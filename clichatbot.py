@@ -80,7 +80,7 @@ def main():
     REASONING_EFFORT: Optional[str] = settings.REASONING_EFFORT
 
     # 推論モデルなら model + reasoning_effort
-    if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
+    if re.match(r"^(gpt-5(?!-chat)|o[3-9])", MODEL):
         MODEL_LABEL = "-".join([MODEL, REASONING_EFFORT])
     else:
         MODEL_LABEL = MODEL
@@ -141,7 +141,8 @@ def main():
             response_id = response.id
             transcript.append({"user": user_input, "assistant": response.output_text})
     # while True
-    save_transcript(transcript, MODEL_LABEL)
+    if transcript:
+        save_transcript(transcript, MODEL_LABEL)
 
 
 if __name__ == "__main__":
