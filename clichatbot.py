@@ -95,7 +95,7 @@ def get_filecontent_base64(file_path, file_ext):
         b64 = base64.b64encode(f.read()).decode("utf-8")
 
     match file_ext:
-        case [".jpg", ".jpeg"]:
+        case ".jpg" | ".jpeg":
             file_content = {
                 "type": "input_image",
                 "image_url": f"data:image/jpeg;base64,{b64}",
