@@ -76,6 +76,17 @@ def save_transcript(transcript: list, model_label: str, save_dir="./history") ->
         console.print(f"[bold red]Failed to save conversation history: {e}[/bold red]")
 
 
+# Function to create a file with the Files API
+def get_fileid(file_path, purpose):
+    file_path = file_path.lower()
+    with open(file_path, "rb") as file_content:
+        result = client.files.create(
+            file=file_content,
+            purpose=purpose,
+        )
+        return result.id
+
+
 def attach_filecontents(file_paths):
     lst_filecontents = []
 
@@ -102,7 +113,7 @@ def attach_filecontents(file_paths):
                 console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
             elif file_ext in [".jpg", ".jpeg", ".png"]:
-                # 画像はbase64に変換
+                """
                 with open(file_path, "rb") as f:
                     b64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -111,11 +122,17 @@ def attach_filecontents(file_paths):
                     "type": "input_image",
                     "image_url": f"data:{mime_type};base64,{b64}",
                 }
+                """
+                file_id = get_fileid(file_path, "vision")
+                file_content = {
+                    "type": "input_image",
+                    "file_id": file_id,
+                }
 
-                console.print(f"[bold magenta]Image loaded and encoded: '{file_path}'[/bold magenta]")
+                console.print(f"[bold magenta]A image file encoded: '{file_path}'[/bold magenta]")
 
             elif file_ext == ".pdf":
-                # pdfもbase64に変換
+                """
                 with open(file_path, "rb") as f:
                     b64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -124,8 +141,14 @@ def attach_filecontents(file_paths):
                     "filename": file_name,
                     "file_data": f"data:application/pdf;base64,{b64}",
                 }
+                """
+                file_id = get_fileid(file_path, "user_data")
+                file_content = {
+                    "type": "input_file",
+                    "file_id": file_id,
+                }
 
-                console.print(f"[bold orange1]pdf loaded and encoded: '{file_path}'[/bold orange1]")
+                console.print(f"[bold orange1]A pdf file encoded: '{file_path}'[/bold orange1]")
 
             else:  # text-based
                 with open(file_path, "r", encoding="utf-8") as file:
