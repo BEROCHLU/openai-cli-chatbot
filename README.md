@@ -45,7 +45,7 @@ Uses event streaming and `previous_response_id` to maintain context.
    ```python
    MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-5-chat-latest | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
    TEMPERATURE = 1.0
-   STREAM = True     # True | False (Responses streaming)
+   STREAM = True     # True | False
    REASONING_EFFORT = "medium"  # low | medium | high | minimal
    ```
 
@@ -84,7 +84,14 @@ user: !save
 
 ```plaintext
 user: Explain these files ^ clichatbot.py ^ settings_example.py
-assistant: Great! Let’s break down what these two files are doing...
+Here’s a clear walkthrough of what each file does, how to use the CLI chatbot, and how the pieces fit together.
+
+Overview
+
+- clichatbot.py: A command-line chatbot that talks to OpenAI’s Responses API. It supports:
+  - Streaming and non-streaming outputs
+  - Threaded conversations via previous_response_id (so you don’t resend the full history)
+...
 
 user: What is this? ^ .file/DSC9999.JPG
 assistant: This image shows a group of people having a meal together on a boat...
@@ -94,19 +101,16 @@ assistant: This image shows a group of people having a meal together on a boat..
 
 * **MODEL**: OpenAI model (e.g. `gpt-5`, `gpt-4.1`, `o4-mini`)
 * **TEMPERATURE**: Higher = more creative, Lower = more deterministic
-* **STREAM**: Stream output if `True`; print once if `False`
+* **STREAM**: Stream output
 * **REASONING\_EFFORT**: Controls reasoning depth (`low` / `medium` / `high` / `minimal`)
   *(primarily used by reasoning-capable models such as `gpt-5`, `o3+`)*
 
 ## Notes
 
-* `max_output_tokens` (Responses API) depends on the model.
 * Reasoning usage:
   - `gpt-5` (excluding `-chat-latest`): uses `reasoning.effort` as specified.
   - `o3–o9`: uses `reasoning.effort`; when `minimal` is specified it falls back to `low`.
-  - `gpt-4.1`/`gpt-4.1-mini`: no reasoning; only token limits adjust.
-
-* Tip: Set `STREAM=False` to get a single Markdown-rendered reply per turn.
+* Set `STREAM=False` to get a single Markdown-rendered reply per turn.
 
 ## License
 
