@@ -78,7 +78,10 @@ def save_transcript(transcript: list, model_label: str, save_dir="./history") ->
 
 # Function to create a file with the Files API
 def get_fileid(file_path, purpose):
-    file_path = file_path.lower()
+    # To fix an issue where uppercase extensions are not accepted, convert them to lowercase.
+    p = Path(file_path)
+    file_path = p.with_suffix(p.suffix.lower())
+
     with open(file_path, "rb") as file_content:
         result = client.files.create(
             file=file_content,
@@ -87,12 +90,36 @@ def get_fileid(file_path, purpose):
         return result.id
 
 
+def get_filecontent_base64(file_path, file_ext):
+    with open(file_path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode("utf-8")
+
+    match file_ext:
+        case [".jpg", ".jpeg"]:
+            file_content = {
+                "type": "input_image",
+                "image_url": f"data:image/jpeg;base64,{b64}",
+            }
+        case ".png":
+            file_content = {
+                "type": "input_image",
+                "image_url": f"data:image/png;base64,{b64}",
+            }
+        case ".pdf":
+            file_content = {
+                "type": "input_file",
+                "filename": Path(file_path).name,
+                "file_data": f"data:application/pdf;base64,{b64}",
+            }
+
+    return file_content
+
+
 def attach_filecontents(file_paths):
     lst_filecontents = []
 
     for file_path in file_paths:
         file_path = file_path.strip()
-        file_name = Path(file_path).name
         file_ext = Path(file_path).suffix.lower()
 
         try:
@@ -113,42 +140,20 @@ def attach_filecontents(file_paths):
                 console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
             elif file_ext in [".jpg", ".jpeg", ".png"]:
-                """
-                with open(file_path, "rb") as f:
-                    b64 = base64.b64encode(f.read()).decode("utf-8")
-
-                mime_type = "image/jpeg" if file_ext in [".jpg", ".jpeg"] else "image/png"
                 file_content = {
                     "type": "input_image",
-                    "image_url": f"data:{mime_type};base64,{b64}",
-                }
-                """
-                file_id = get_fileid(file_path, "vision")
-                file_content = {
-                    "type": "input_image",
-                    "file_id": file_id,
+                    "file_id": get_fileid(file_path, "vision"),
                 }
 
-                console.print(f"[bold magenta]A image file encoded: '{file_path}'[/bold magenta]")
+                console.print(f"[bold magenta]Processing a image file: '{file_path}'[/bold magenta]")
 
             elif file_ext == ".pdf":
-                """
-                with open(file_path, "rb") as f:
-                    b64 = base64.b64encode(f.read()).decode("utf-8")
-
                 file_content = {
                     "type": "input_file",
-                    "filename": file_name,
-                    "file_data": f"data:application/pdf;base64,{b64}",
-                }
-                """
-                file_id = get_fileid(file_path, "user_data")
-                file_content = {
-                    "type": "input_file",
-                    "file_id": file_id,
+                    "file_id": get_fileid(file_path, "user_data"),
                 }
 
-                console.print(f"[bold orange1]A pdf file encoded: '{file_path}'[/bold orange1]")
+                console.print(f"[bold orange1]Processing a pdf file: '{file_path}'[/bold orange1]")
 
             else:  # text-based
                 with open(file_path, "r", encoding="utf-8") as file:
