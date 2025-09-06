@@ -2,8 +2,8 @@
 
 ## Overview
 
-A simple command-line chatbot powered by the OpenAI Responses API.
-It supports conversation history, file analysis, and instant saving.
+A simple command-line chatbot powered by the OpenAI Responses API.  
+It supports conversation history, file analysis, and instant saving.  
 Uses event streaming and `previous_response_id` to maintain context.
 
 ## Features
@@ -14,8 +14,8 @@ Uses event streaming and `previous_response_id` to maintain context.
 
   * Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   * Excel files (`.xlsx`, automatically converted to JSON)
-  * PDF files (`.pdf`)
-  * Images (`.jpg`, `.jpeg`, `.png`)
+  * PDF files (`.pdf`, supports both **local files and URLs**)
+  * Images (`.jpg`, `.jpeg`, `.png`, supports both **local files and URLs**)
 * Instant save using `!save` command
 
 ## Requirements
@@ -71,7 +71,21 @@ user: Your question
 user: Explain this code ^ /path/to/example.py ^ /path/to/another_file.py
 ```
 
-**Exit session**
+```plaintext
+user: Explain these ^ /path/to/document.pdf ^ /path/to/image.png
+```
+
+**Image / PDF via URL**
+
+```plaintext
+user: What is in this image? ^ https://example.com/sample.jpg
+```
+
+```plaintext
+user: Summarize this PDF ^ https://example.com/document.pdf
+```
+
+**Exit session**  
 Press **Enter** on empty input → history is saved to `./history`.
 
 **Instant save**

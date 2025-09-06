@@ -77,7 +77,7 @@ def save_transcript(transcript: list, model_label: str, save_dir="./history") ->
 
 
 # Function to create a file with the Files API
-def get_fileid(file_path, purpose):
+def get_fileid(file_path, purpose) -> str:
     # To fix an issue where uppercase extensions are not accepted, convert them to lowercase.
     p = Path(file_path)
     file_path = p.with_suffix(p.suffix.lower())
@@ -90,7 +90,7 @@ def get_fileid(file_path, purpose):
         return result.id
 
 
-def get_filecontent_base64(file_path, file_ext):
+def get_filecontent_base64(file_path: str, file_ext: str) -> dict:
     with open(file_path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode("utf-8")
 
@@ -115,7 +115,7 @@ def get_filecontent_base64(file_path, file_ext):
     return file_content
 
 
-def attach_filecontents(file_paths):
+def attach_filecontents(file_paths: list[str]):
     lst_filecontents = []
 
     for file_path in file_paths:
@@ -140,18 +140,30 @@ def attach_filecontents(file_paths):
                 console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
             elif file_ext in [".jpg", ".jpeg", ".png"]:
-                file_content = {
-                    "type": "input_image",
-                    "file_id": get_fileid(file_path, "vision"),
-                }
+                if file_path.startswith("http"):
+                    file_content = {
+                        "type": "input_image",
+                        "image_url": file_path,
+                    }
+                else:
+                    file_content = {
+                        "type": "input_image",
+                        "file_id": get_fileid(file_path, "vision"),
+                    }
 
                 console.print(f"[bold magenta]Processing a image file: '{file_path}'[/bold magenta]")
 
             elif file_ext == ".pdf":
-                file_content = {
-                    "type": "input_file",
-                    "file_id": get_fileid(file_path, "user_data"),
-                }
+                if file_path.startswith("http"):
+                    file_content = {
+                        "type": "input_file",
+                        "file_url": file_path,
+                    }
+                else:
+                    file_content = {
+                        "type": "input_file",
+                        "file_id": get_fileid(file_path, "user_data"),
+                    }
 
                 console.print(f"[bold orange1]Processing a pdf file: '{file_path}'[/bold orange1]")
 
