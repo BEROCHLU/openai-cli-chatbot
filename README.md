@@ -103,7 +103,7 @@ Overview
 ...
 
 user: Analyze the letter and provide a summary of the key points. ^ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
-Processing a pdf file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
+Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
 Here’s a concise, decision‑oriented summary of Berkshire Hathaway’s Q2 2025 Form 10‑Q.
 

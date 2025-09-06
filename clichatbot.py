@@ -151,7 +151,7 @@ def attach_filecontents(file_paths: list[str]):
                         "file_id": get_fileid(file_path, "vision"),
                     }
 
-                console.print(f"[bold magenta]Processing a image file: '{file_path}'[/bold magenta]")
+                console.print(f"[bold magenta]Processing the file: '{file_path}'[/bold magenta]")
 
             elif file_ext == ".pdf":
                 if file_path.startswith("http"):
@@ -165,7 +165,7 @@ def attach_filecontents(file_paths: list[str]):
                         "file_id": get_fileid(file_path, "user_data"),
                     }
 
-                console.print(f"[bold orange1]Processing a pdf file: '{file_path}'[/bold orange1]")
+                console.print(f"[bold orange1]Processing the file: '{file_path}'[/bold orange1]")
 
             else:  # text-based
                 with open(file_path, "r", encoding="utf-8") as file:
