@@ -68,21 +68,13 @@ user: Your question
 **File analysis** (multiple files supported, space around `^` is required)
 
 ```plaintext
-user: Explain this code ^ /path/to/example.py ^ /path/to/another_file.py
-```
-
-```plaintext
-user: Explain these ^ /path/to/document.pdf ^ /path/to/image.png
+user: Explain these files ^ /path/to/example.py ^ /path/to/document.pdf ^ /path/to/image.png
 ```
 
 **Image / PDF via URL**
 
 ```plaintext
-user: What is in this image? ^ https://example.com/sample.jpg
-```
-
-```plaintext
-user: Summarize this PDF ^ https://example.com/document.pdf
+user: Are these files related? ^ https://example.com/image.jpg ^ https://example.com/document.pdf
 ```
 
 **Exit session**  
@@ -98,6 +90,9 @@ user: !save
 
 ```plaintext
 user: Explain these files ^ clichatbot.py ^ settings_example.py
+Completed loading the file: 'clichatbot.py'
+Completed loading the file: 'settings_example.py'
+gpt-5-medium assistant:
 Here’s a clear walkthrough of what each file does, how to use the CLI chatbot, and how the pieces fit together.
 
 Overview
@@ -107,8 +102,16 @@ Overview
   - Threaded conversations via previous_response_id (so you don’t resend the full history)
 ...
 
-user: What is this? ^ .file/DSC9999.JPG
-assistant: This image shows a group of people having a meal together on a boat...
+user: Analyze the letter and provide a summary of the key points. ^ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
+Processing a pdf file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
+gpt-5-medium assistant:
+Here’s a concise, decision‑oriented summary of Berkshire Hathaway’s Q2 2025 Form 10‑Q.
+
+Headline results
+- Net earnings attributable to Berkshire shareholders: $12.37B for Q2 (vs. $30.35B in Q2’24); $16.97B for 1H’25 (vs. $43.05B in 1H’24).
+- Revenues: $92.5B in Q2 (−1% YoY); $182.2B in 1H (−1% YoY).
+- EPS (equivalent): Class A $8,601; Class B $5.73.
+...
 ```
 
 ## Configuration
