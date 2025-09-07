@@ -123,62 +123,57 @@ def attach_filecontents(file_paths: list[str]):
         file_ext = Path(file_path).suffix.lower()
 
         try:
-            if file_ext == ".xlsx":
-                # エクセルの場合はJSONに変換
-                sheets_dict = pd.read_excel(file_path, sheet_name=None)
-                json_data = {sheet: df.to_dict(orient="records") for sheet, df in sheets_dict.items()}
-                json_str = json.dumps(json_data, ensure_ascii=False, indent=2)
+            match file_ext:
+                case ".xlsx":
+                    # エクセルの場合はJSONに変換
+                    sheets_dict = pd.read_excel(file_path, sheet_name=None)
+                    json_data = {sheet: df.to_dict(orient="records") for sheet, df in sheets_dict.items()}
+                    json_str = json.dumps(json_data, ensure_ascii=False, separators=(",", ":"))
 
-                file_content = f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n"
-                file_content += json_str
-
-                file_content = {
-                    "type": "input_text",
-                    "text": file_content,
-                }
-
-                console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
-
-            elif file_ext in [".jpg", ".jpeg", ".png"]:
-                if file_path.startswith("http"):
                     file_content = {
-                        "type": "input_image",
-                        "image_url": file_path,
-                    }
-                else:
-                    file_content = {
-                        "type": "input_image",
-                        "file_id": get_fileid(file_path, "vision"),
+                        "type": "input_text",
+                        "text": f"\n\n--- Converted JSON from Excel file: {file_path} ---\n\n{json_str}",
                     }
 
-                console.print(f"[bold magenta]Processing the file: '{file_path}'[/bold magenta]")
+                    console.print(f"[bold green]Converted XLSX to JSON successfully: '{file_path}'[/bold green]")
 
-            elif file_ext == ".pdf":
-                if file_path.startswith("http"):
-                    file_content = {
-                        "type": "input_file",
-                        "file_url": file_path,
-                    }
-                else:
-                    file_content = {
-                        "type": "input_file",
-                        "file_id": get_fileid(file_path, "user_data"),
-                    }
+                case ".jpg" | ".jpeg" | ".png":
+                    if file_path.startswith("http"):
+                        file_content = {
+                            "type": "input_image",
+                            "image_url": file_path,
+                        }
+                    else:
+                        file_content = {
+                            "type": "input_image",
+                            "file_id": get_fileid(file_path, "vision"),
+                        }
 
-                console.print(f"[bold orange1]Processing the file: '{file_path}'[/bold orange1]")
+                    console.print(f"[bold magenta]Processing the file: '{file_path}'[/bold magenta]")
 
-            else:  # text-based
-                with open(file_path, "r", encoding="utf-8") as file:
-                    file_content = f"\n\n--- File: {file_path} ---\n\n"
-                    file_content += file.read()
+                case ".pdf":
+                    if file_path.startswith("http"):
+                        file_content = {
+                            "type": "input_file",
+                            "file_url": file_path,
+                        }
+                    else:
+                        file_content = {
+                            "type": "input_file",
+                            "file_id": get_fileid(file_path, "user_data"),
+                        }
 
-                file_content = {
-                    "type": "input_text",
-                    "text": file_content,
-                }
+                    console.print(f"[bold orange1]Processing the file: '{file_path}'[/bold orange1]")
 
-                console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
-            # if file_ext == ".xlsx":
+                case _:  # text-based
+                    with open(file_path, "r", encoding="utf-8") as file:
+                        file_content = {
+                            "type": "input_text",
+                            "text": f"\n\n--- Text-based file: {file_path} ---\n\n{file.read()}",
+                        }
+
+                    console.print(f"[bold blue]Completed loading the file: '{file_path}'[/bold blue]")
+            # match file_ext:
             lst_filecontents.append(file_content)
 
         except Exception as e:
