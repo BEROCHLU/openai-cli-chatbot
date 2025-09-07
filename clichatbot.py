@@ -26,6 +26,7 @@ def get_api_params(
     effort: str,
     response_id: Optional[str],
     isSearch: bool,
+    country: Optional[str],
 ) -> dict:
     # 基本パラメータ
     params = {
@@ -62,7 +63,20 @@ def get_api_params(
             }
         )
 
-    isSearch and params.update({"tools": [{"type": "web_search"}]})  # type: ignore
+    if isSearch:
+        params.update(
+            {
+                "tools": [
+                    {
+                        "type": "web_search",
+                        "user_location": {
+                            "type": "approximate",
+                            "country": country,
+                        },
+                    }
+                ]
+            }
+        )
 
     return params
 
@@ -196,6 +210,7 @@ def main():
     TEMPERATURE: float = settings.TEMPERATURE
     STREAM: bool = settings.STREAM
     REASONING_EFFORT: Optional[str] = settings.REASONING_EFFORT
+    COUNTRY: str = settings.COUNTRY
 
     # 推論モデルなら model + reasoning_effort
     if re.match(r"^(gpt-5(?!-chat)|o[3-9])", MODEL):
@@ -257,7 +272,9 @@ def main():
             lst_filecontents = attach_filecontents(file_paths)
             messages[user_index]["content"].extend(lst_filecontents)  # type: ignore
 
-        api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch)
+        api_params = get_api_params(
+            messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
+        )
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")

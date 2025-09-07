@@ -3,7 +3,7 @@
 ## Overview
 
 A simple command-line chatbot powered by the OpenAI Responses API.  
-It supports conversation history, file analysis, and instant saving.  
+It supports conversation history, file analysis, instant saving, **and web search**.  
 Uses event streaming and `previous_response_id` to maintain context.
 
 ## Features
@@ -11,18 +11,17 @@ Uses event streaming and `previous_response_id` to maintain context.
 * Conversational interface with context-aware replies
 * Conversation history saved to `./history`
 * File input via `^` operator:
-
   * Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   * Excel files (`.xlsx`, automatically converted to JSON)
   * PDF files (`.pdf`, supports both **local files and URLs**)
   * Images (`.jpg`, `.jpeg`, `.png`, supports both **local files and URLs**)
+* **Web search using the `--search` flag for up-to-date answers**
 * Instant save using `!save` command
 
 ## Requirements
 
 * Python 3.10+
 * Install dependencies:
-
   ```bash
   pip install -r requirements.txt
   ```
@@ -47,6 +46,7 @@ Uses event streaming and `previous_response_id` to maintain context.
    TEMPERATURE = 1.0
    STREAM = True     # True | False
    REASONING_EFFORT = "medium"  # low | medium | high | minimal
+   COUNTRY = "JP" # Two-letter ISO country code for web search
    ```
 
 3. **Run**
@@ -77,7 +77,14 @@ user: Explain these files ^ /path/to/example.py ^ /path/to/document.pdf ^ /path/
 user: Are these files related? ^ https://example.com/image.jpg ^ https://example.com/document.pdf
 ```
 
-**Exit session**  
+**Web Search**
+**Add `--search` at the end of your question to enable web search.**
+
+```plaintext
+user: What are the latest developments in quantum computing? --search
+```
+
+**Exit session**
 Press **Enter** on empty input → history is saved to `./history`.
 
 **Instant save**
@@ -121,6 +128,7 @@ Headline results
 * **STREAM**: Stream output
 * **REASONING\_EFFORT**: Controls reasoning depth (`low` / `medium` / `high` / `minimal`)
   *(primarily used by reasoning-capable models such as `gpt-5`, `o3+`)*
+* **COUNTRY**: **Two-letter ISO country code (e.g., `US`, `JP`) to localize web search results.**
 
 ## Notes
 
