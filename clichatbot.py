@@ -19,7 +19,13 @@ console = Console()
 
 
 def get_api_params(
-    messages: list, model: str, temperature: float, stream: bool, effort: str, response_id: Optional[str]
+    messages: list,
+    model: str,
+    temperature: float,
+    stream: bool,
+    effort: str,
+    response_id: Optional[str],
+    isSearch: bool,
 ) -> dict:
     # 基本パラメータ
     params = {
@@ -55,6 +61,8 @@ def get_api_params(
                 "reasoning": {"effort": eff},
             }
         )
+
+    isSearch and params.update({"tools": [{"type": "web_search"}]})  # type: ignore
 
     return params
 
@@ -220,6 +228,7 @@ def main():
         args = user_input.split(" ^ ")  # 質問とファイルパスを ^ で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
         user_index = 0
+        isSearch = False
 
         messages = [
             {
@@ -237,13 +246,18 @@ def main():
             messages = developer_prompt + messages
             user_index = 1
 
+        if user_question.endswith(" --search"):
+            isSearch = True
+            user_question = user_question.removesuffix(" --search")
+            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
+
         # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応）
         if len(args) >= 2:
             file_paths = args[1:]
             lst_filecontents = attach_filecontents(file_paths)
             messages[user_index]["content"].extend(lst_filecontents)  # type: ignore
 
-        api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id)
+        api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch)
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
