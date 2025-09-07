@@ -3,7 +3,7 @@
 ## Overview
 
 A simple command-line chatbot powered by the OpenAI Responses API.  
-It supports conversation history, file analysis, instant saving, **and web search**.  
+It supports conversation history, file analysis, instant saving, and web search.  
 Uses event streaming and `previous_response_id` to maintain context.
 
 ## Features
@@ -13,8 +13,8 @@ Uses event streaming and `previous_response_id` to maintain context.
 * File input via `^` operator:
   * Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   * Excel files (`.xlsx`, automatically converted to JSON)
-  * PDF files (`.pdf`, supports both **local files and URLs**)
-  * Images (`.jpg`, `.jpeg`, `.png`, supports both **local files and URLs**)
+  * PDF files (`.pdf`, supports both local files and URLs)
+  * Images (`.jpg`, `.jpeg`, `.png`, supports both local files and URLs)
 * Web search using the `--search` flag for up-to-date answers
 * Instant save using `!save` command
 
@@ -65,7 +65,7 @@ Uses event streaming and `previous_response_id` to maintain context.
 user: Your question
 ```
 
-**File analysis**  Multiple files supported, space around `^` is required
+**File analysis**, multiple files supported, space around `^` is required
 
 ```plaintext
 user: Explain these files ^ /path/to/example.py ^ /path/to/document.pdf ^ /path/to/image.png
@@ -77,13 +77,13 @@ user: Explain these files ^ /path/to/example.py ^ /path/to/document.pdf ^ /path/
 user: Are these files related? ^ https://example.com/image.jpg ^ https://example.com/document.pdf
 ```
 
-**Web Search**  Add `--search` at the end of your question to enable web search.
+**Web Search**, add `--search` at the end of your question to enable web search.
 
 ```plaintext
 user: What are the latest developments in quantum computing? --search
 ```
 
-**Exit session**  Press **Enter** on empty input → history is saved to `./history`.
+**Exit session**, press Enter on empty input → history is saved to `./history`.
 
 **Instant save**
 
@@ -124,16 +124,17 @@ Headline results
 * **MODEL**: OpenAI model (e.g. `gpt-5`, `gpt-4.1`, `o4-mini`)
 * **TEMPERATURE**: Higher = more creative, Lower = more deterministic
 * **STREAM**: Stream output
-* **REASONING\_EFFORT**: Controls reasoning depth (`low` / `medium` / `high` / `minimal`)
-  *(primarily used by reasoning-capable models such as `gpt-5`, `o3+`)*
-* **COUNTRY**: Two-letter ISO country code (e.g., `US`, `JP`) to localize web search results.
+* **REASONING\_EFFORT**: Higher values increase processing time and token usage
+* **COUNTRY**: Two-letter ISO country code (e.g., `US`, `JP`) to localize web search results
 
 ## Notes
 
 * Reasoning usage:
-  - `gpt-5` (excluding `-chat-latest`): uses `reasoning.effort` as specified.
-  - `o3–o9`: uses `reasoning.effort`; when `minimal` is specified it falls back to `low`.
+  - This parameter is valid only for reasoning models (`gpt-5` or `o1–o9`), excluding `gpt-5-chat-latest`.
+  - The value `minimal` is intended for `gpt-5`, `gpt-5-mini`, and `gpt-5-nano`.
+  - `o1–o9`: uses `reasoning.effort`; when `minimal` is specified it falls back to `low`.
 * Set `STREAM=False` to get a single Markdown-rendered reply per turn.
+* If an error occurs with an HTTP-linked PDF file, tyr downloading the file first.
 
 ## License
 

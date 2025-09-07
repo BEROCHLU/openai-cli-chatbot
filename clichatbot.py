@@ -52,8 +52,8 @@ def get_api_params(
             }
         )
 
-    # o3～o9
-    elif re.match(r"^o[3-9]", model):
+    # o1～o9
+    elif re.match(r"^o[1-9]", model):
         eff = "low" if effort == "minimal" else effort
         params.update(
             {
@@ -213,7 +213,7 @@ def main():
     COUNTRY: str = settings.COUNTRY
 
     # 推論モデルなら model + reasoning_effort
-    if re.match(r"^(gpt-5(?!-chat)|o[3-9])", MODEL):
+    if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
         MODEL_LABEL = "-".join([MODEL, REASONING_EFFORT])
     else:
         MODEL_LABEL = MODEL
