@@ -59,7 +59,7 @@ Uses event streaming and `previous_response_id` to maintain context.
 
 ## Usage
 
-**Basic chat**
+**Basic chat**, type your question. Press `Enter` to add a new line, and press **`Alt+Enter`** (or `Esc` then `Enter`) to send the message.
 
 ```plaintext
 user: Your question

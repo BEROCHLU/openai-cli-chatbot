@@ -11,6 +11,7 @@ import pandas as pd
 from openai import OpenAI
 from rich.console import Console
 from rich.markdown import Markdown
+from prompt_toolkit import prompt
 
 import settings
 
@@ -26,7 +27,7 @@ def get_api_params(
     effort: str,
     response_id: Optional[str],
     isSearch: bool,
-    country: Optional[str],
+    country: str,
 ) -> dict:
     # 基本パラメータ
     params = {
@@ -233,17 +234,25 @@ def main():
     ]
 
     while True:
-        user_input = input("user: ").strip()
+        # user_input = input("user: ").strip()
+        # console.print("user: ")
+        user_input = prompt("user: ", multiline=True, prompt_continuation="")
+
         if not user_input:
             break
         elif user_input.strip() == "!save":
             save_transcript(transcript, MODEL_LABEL)
             continue
 
-        args = user_input.split(" ^ ")  # 質問とファイルパスを ^ で区切る
+        args = re.split(r"\s\^\s", user_input)  # 質問とファイルパスを ^ で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
         user_index = 0
         isSearch = False
+
+        if user_question.endswith(" --search"):
+            isSearch = True
+            user_question = user_question.removesuffix(" --search")
+            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
 
         messages = [
             {
@@ -261,11 +270,6 @@ def main():
             messages = developer_prompt + messages
             user_index = 1
 
-        if user_question.endswith(" --search"):
-            isSearch = True
-            user_question = user_question.removesuffix(" --search")
-            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
-
         # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応）
         if len(args) >= 2:
             file_paths = args[1:]
@@ -275,6 +279,7 @@ def main():
         api_params = get_api_params(
             messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
         )
+        console.print("[bold green]thinking...[/bold green]")
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
