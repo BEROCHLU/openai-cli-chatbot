@@ -9,9 +9,9 @@ from typing import Optional
 
 import pandas as pd
 from openai import OpenAI
+from prompt_toolkit import prompt
 from rich.console import Console
 from rich.markdown import Markdown
-from prompt_toolkit import prompt
 
 import settings
 
@@ -63,7 +63,9 @@ def get_api_params(
                 "reasoning": {"effort": eff},
             }
         )
-        console.print("The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'.")
+        console.print(
+            "The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'."
+        )
 
     if isSearch:
         eff = "low" if effort == "minimal" else effort
@@ -78,7 +80,7 @@ def get_api_params(
                             "country": country,
                         },
                     }
-                ]
+                ],
             }
         )
         console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
