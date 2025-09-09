@@ -45,6 +45,10 @@ def get_api_params(
 
     # gpt-5 系 (chat-latestを除く)
     elif re.match(r"^gpt-5(?!-chat)", model):
+        if isSearch and effort == "minimal":
+            effort = "low"
+            console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
+
         params.update(
             {
                 "temperature": 1.0,
@@ -55,23 +59,23 @@ def get_api_params(
 
     # o1～o9
     elif re.match(r"^o[1-9]", model):
-        eff = "low" if effort == "minimal" else effort
+        if effort == "minimal":
+            effort = "low"
+            console.print(
+                "The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'."
+            )
+
         params.update(
             {
                 "temperature": 1.0,
                 "max_output_tokens": 100000,
-                "reasoning": {"effort": eff},
+                "reasoning": {"effort": effort},
             }
-        )
-        console.print(
-            "The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'."
         )
 
     if isSearch:
-        eff = "low" if effort == "minimal" else effort
         params.update(
             {
-                "reasoning": {"effort": eff},
                 "tools": [
                     {
                         "type": "web_search",
@@ -83,7 +87,6 @@ def get_api_params(
                 ],
             }
         )
-        console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
 
     return params
 
@@ -119,6 +122,7 @@ def get_fileid(file_path, purpose) -> str:
         return result.id
 
 
+# This function is currently unused in the main workflow but is kept for future reference.
 def get_filecontent_base64(file_path: str, file_ext: str) -> dict:
     with open(file_path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -207,7 +211,8 @@ def attach_filecontents(file_paths: list[str]):
 
         except Exception as e:
             console.print(f"[bold red]Error processing file '{file_path}': {e}[/bold red]")
-            break
+            console.print(f"[bold yellow]Skipping this file.[/bold yellow]")
+            continue
     # for file_path in file_paths:
     return lst_filecontents
 
