@@ -63,10 +63,13 @@ def get_api_params(
                 "reasoning": {"effort": eff},
             }
         )
+        console.print("The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'.")
 
     if isSearch:
+        eff = "low" if effort == "minimal" else effort
         params.update(
             {
+                "reasoning": {"effort": eff},
                 "tools": [
                     {
                         "type": "web_search",
@@ -78,6 +81,7 @@ def get_api_params(
                 ]
             }
         )
+        console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
 
     return params
 
