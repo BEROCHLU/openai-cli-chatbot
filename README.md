@@ -134,7 +134,6 @@ Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
 Here’s a concise, decision‑oriented summary of Berkshire Hathaway’s Q2 2025 Form 10‑Q.
 ```
-<p align="left"><img src="./.github/ws1.png" alt="web_search1"></p> 
 
 <p align="left"><img src="./.github/ws1.png" width="830" height="240" alt="web_search1"></p>
 
