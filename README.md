@@ -106,7 +106,8 @@ Overview
   - Streaming and non-streaming outputs
   - Threaded conversations via previous_response_id (so you don’t resend the full history)
 ...
-
+```
+```plaintext
 user: Analyze the letter and provide a summary of the key points. ^ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
 Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
@@ -116,6 +117,17 @@ Headline results
 - Net earnings attributable to Berkshire shareholders: $12.37B for Q2 (vs. $30.35B in Q2’24); $16.97B for 1H’25 (vs. $43.05B in 1H’24).
 - Revenues: $92.5B in Q2 (−1% YoY); $182.2B in 1H (−1% YoY).
 - EPS (equivalent): Class A $8,601; Class B $5.73.
+...
+```
+```plaintext
+user: What are the latest developments in quantum computing? --search
+Enable web search.
+thinking...
+gpt-5-low assistant:
+Here’s a quick, date-stamped roundup of the most notable quantum computing developments as of September 11, 2025:
+
+Hardware and architectures
+- Microsoft unveiled Majorana 1 (Feb 19, 2025), claiming the first topological-qubit quantum processor built with a new “topoconductor” material; Microsoft says its measurement‑based, digitally controlled approach could cut error-correction overhead and is now in DARPA’s US2QC final phase. ([azure.microsoft.com](https://azure.microsoft.com/en-us/blog/quantum/2025/02/19/microsoft-unveils-majorana-1-the-worlds-first-quantum-processor-powered-by-topological-qubits/?msockid=0cb69cea75a7645907a28973747b6595&utm_source=openai))
 ...
 ```
 
