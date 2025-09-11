@@ -9,6 +9,7 @@ from typing import Optional
 
 import pandas as pd
 from openai import OpenAI
+from prompt_toolkit import prompt
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -244,14 +245,16 @@ def main():
     ]
 
     while True:
-        user_input = input("user: ").strip()
+        # user_input = input("user: ").strip()
+        user_input = prompt("user: ", multiline=True, prompt_continuation="")
+
         if not user_input:
             break
         elif user_input.strip() == "!save":
             save_transcript(transcript, MODEL_LABEL)
             continue
 
-        args = user_input.split(" ^ ")  # 質問とファイルパスを ^ で区切る
+        args = re.split(r"\s\^\s", user_input)  # 質問とファイルパスを ^ で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
         user_index = 0
         isSearch = False
