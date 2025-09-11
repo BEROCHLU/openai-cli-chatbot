@@ -84,7 +84,7 @@ def get_api_params(
                             "country": country,
                         },
                     }
-                ],
+                ]
             }
         )
 

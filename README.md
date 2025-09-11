@@ -106,7 +106,8 @@ Overview
   - Streaming and non-streaming outputs
   - Threaded conversations via previous_response_id (so you don’t resend the full history)
 ...
-
+```
+```plaintext
 user: Analyze the letter and provide a summary of the key points. ^ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
 Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
@@ -118,6 +119,7 @@ Headline results
 - EPS (equivalent): Class A $8,601; Class B $5.73.
 ...
 ```
+<p align="left"><img src="./.github/ws1.png" width="830" height="240" alt="web_search1"></p>
 
 ## Configuration
 
