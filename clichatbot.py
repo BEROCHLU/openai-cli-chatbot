@@ -246,7 +246,6 @@ def main():
 
     while True:
         # user_input = input("user: ").strip()
-        # console.print("user: ")
         user_input = prompt("user: ", multiline=True, prompt_continuation="")
 
         if not user_input:

@@ -17,6 +17,7 @@ Uses event streaming and `previous_response_id` to maintain context.
   * Images (`.jpg`, `.jpeg`, `.png`, supports both local files and URLs)
 * Web search using the `--search` flag for up-to-date answers
 * Instant save using `!save` command
+* Supports Emacs-style shortcuts (default in `prompt_toolkit`)
 
 ## Requirements
 
@@ -90,6 +91,15 @@ user: What are the latest developments in quantum computing? --search
 ```plaintext
 user: !save
 ```
+
+### Keyboard Shortcuts (Emacs-style)
+
+- `Ctrl + A` → Move cursor to beginning of line  
+- `Ctrl + E` → Move cursor to end of line  
+- `Ctrl + U` → Delete from cursor to beginning of line  
+- `Ctrl + K` → Delete from cursor to end of line  
+- `Ctrl + D` → Delete character under cursor  
+- `Ctrl + H` → Backspace  
 
 ## Example
 
