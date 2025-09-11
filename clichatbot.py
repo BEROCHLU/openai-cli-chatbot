@@ -26,7 +26,7 @@ def get_api_params(
     effort: str,
     response_id: Optional[str],
     isSearch: bool,
-    country: Optional[str],
+    country: str,
 ) -> dict:
     # 基本パラメータ
     params = {
@@ -44,6 +44,10 @@ def get_api_params(
 
     # gpt-5 系 (chat-latestを除く)
     elif re.match(r"^gpt-5(?!-chat)", model):
+        if isSearch and effort == "minimal":
+            effort = "low"
+            console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
+
         params.update(
             {
                 "temperature": 1.0,
@@ -54,12 +58,17 @@ def get_api_params(
 
     # o1～o9
     elif re.match(r"^o[1-9]", model):
-        eff = "low" if effort == "minimal" else effort
+        if effort == "minimal":
+            effort = "low"
+            console.print(
+                "The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'."
+            )
+
         params.update(
             {
                 "temperature": 1.0,
                 "max_output_tokens": 100000,
-                "reasoning": {"effort": eff},
+                "reasoning": {"effort": effort},
             }
         )
 
@@ -112,6 +121,7 @@ def get_fileid(file_path, purpose) -> str:
         return result.id
 
 
+# This function is currently unused in the main workflow but is kept for future reference.
 def get_filecontent_base64(file_path: str, file_ext: str) -> dict:
     with open(file_path, "rb") as f:
         b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -200,7 +210,8 @@ def attach_filecontents(file_paths: list[str]):
 
         except Exception as e:
             console.print(f"[bold red]Error processing file '{file_path}': {e}[/bold red]")
-            break
+            console.print(f"[bold yellow]Skipping this file.[/bold yellow]")
+            continue
     # for file_path in file_paths:
     return lst_filecontents
 
@@ -245,6 +256,11 @@ def main():
         user_index = 0
         isSearch = False
 
+        if user_question.endswith(" --search"):
+            isSearch = True
+            user_question = user_question.removesuffix(" --search")
+            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
+
         messages = [
             {
                 "role": "user",
@@ -261,11 +277,6 @@ def main():
             messages = developer_prompt + messages
             user_index = 1
 
-        if user_question.endswith(" --search"):
-            isSearch = True
-            user_question = user_question.removesuffix(" --search")
-            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
-
         # 2つ目以降の引数があればファイルパスとして処理（複数ファイル対応）
         if len(args) >= 2:
             file_paths = args[1:]
@@ -275,6 +286,7 @@ def main():
         api_params = get_api_params(
             messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
         )
+        console.print("[bold green]thinking...[/bold green]")
         response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
