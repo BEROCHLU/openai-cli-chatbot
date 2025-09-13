@@ -126,6 +126,12 @@ Completed loading the file: 'clichatbot.py'
 Completed loading the file: 'settings_example.py'
 gpt-5-medium assistant:
 Here’s a clear walkthrough of what each file does, how to use the CLI chatbot, and how the pieces fit together.
+
+Overview
+
+- clichatbot.py: A command-line chatbot that talks to OpenAI’s Responses API. It supports:
+  - Streaming and non-streaming outputs
+...
 ```
 
 ```plaintext
@@ -133,6 +139,11 @@ user: Analyze the letter and provide a summary of the key points. ^ https://www.
 Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
 Here’s a concise, decision‑oriented summary of Berkshire Hathaway’s Q2 2025 Form 10‑Q.
+
+Headline results
+- Net earnings attributable to Berkshire shareholders: $12.37B for Q2 (vs. $30.35B in Q2’24); $16.97B for 1H’25 (vs. $43.05B in 1H’24).
+- Revenues: $92.5B in Q2 (−1% YoY); $182.2B in 1H (−1% YoY).
+...
 ```
 
 <p align="left"><img src="./.github/ws1.png" width="830" height="240" alt="web_search1"></p>
