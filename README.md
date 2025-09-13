@@ -152,6 +152,7 @@ Headline results
 
 ## ⚙️ Configuration
 
+- **PROMPT** → System prompt for the assistant (e.g., `"You are a helpful assistant."`)
 - **MODEL** → OpenAI model (`gpt-5`, `gpt-4.1`, `o4-mini`, etc.)
 - **TEMPERATURE** → Higher = more creative, Lower = more deterministic
 - **STREAM** → Stream output (`True`/`False`)

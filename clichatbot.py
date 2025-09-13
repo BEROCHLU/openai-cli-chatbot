@@ -218,6 +218,7 @@ def attach_filecontents(file_paths: list[str]):
 
 
 def main():
+    PROMPT: str = settings.PROMPT
     MODEL: str = settings.MODEL
     TEMPERATURE: float = settings.TEMPERATURE
     STREAM: bool = settings.STREAM
@@ -236,11 +237,7 @@ def main():
     developer_prompt = [
         {
             "role": "developer",
-            "content": (
-                "You are a helpful assistant. "
-                "Since the conversation will be saved in Markdown format, "
-                "make your responses well-structured and easy to read in Markdown."
-            ),
+            "content": PROMPT,
         }
     ]
 
