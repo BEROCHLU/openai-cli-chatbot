@@ -98,7 +98,7 @@ user: What are the latest developments in quantum computing? --search
 ```
 
 ### Exit Session
-Press **Enter** on empty input → history is saved to `./history`.
+Press **`Alt+Enter`** (or `Esc` then `Enter`) on empty input → history is saved to `./history`.
 
 ### Instant Save
 ```plaintext
