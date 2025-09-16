@@ -286,8 +286,9 @@ def main():
         api_params = get_api_params(
             messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
         )
-        console.print("[bold green]thinking...[/bold green]")
-        response = client.responses.create(**api_params)
+
+        with console.status("[bold green]thinking...[/bold green]", spinner="dots"):
+            response = client.responses.create(**api_params)
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
 
