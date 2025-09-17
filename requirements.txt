@@ -1,5 +1,0 @@
-openai
-pandas
-openpyxl
-rich
-prompt_toolkit
