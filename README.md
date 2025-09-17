@@ -66,8 +66,6 @@ Use [Windows Terminal](https://apps.microsoft.com/detail/windows-terminal/9N0DX2
    python clichatbot.py
    ```
 
-   *(Windows users can use `script/wt-openai.bat` to launch in Windows Terminal.)*
-
 ---
 
 ## 💬 Usage
