@@ -15,7 +15,7 @@ Uses event streaming and `previous_response_id` to maintain context efficiently.
   - Multi-line prompt input (Enter = new line, Alt+Enter = send)
   - Emacs-style shortcuts (e.g., Ctrl+A, Ctrl+E, Ctrl+K, etc.)
 * 💾 Conversation history saved to `./history`
-* 📂 File input via `^` operator:
+* 📂 File input via lines starting with `~ ` (tilde + space):
   - Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   - Excel files (`.xlsx`, automatically converted to JSON)
   - PDF files (`.pdf`, supports both local files and URLs)
@@ -80,15 +80,20 @@ user: Your question
 ```
 
 ### File Analysis
-Multiple files supported (`^` operator, space required):
+Multiple files supported  (each file path on a new line starting with **`~ `**):
 
 ```plaintext
-user: Explain these files ^ /path/to/example.py ^ /path/to/document.pdf ^ /path/to/image.png
+user: Explain these files
+~ /path/to/example.py
+~ /path/to/document.pdf
+~ /path/to/image.png
 ```
 
 ### Image / PDF via URL
 ```plaintext
-user: Are these files related? ^ https://example.com/image.jpg ^ https://example.com/document.pdf
+user: Are these files related?
+~ https://example.com/image.jpg
+~ https://example.com/document.pdf
 ```
 
 ### Web Search
@@ -120,7 +125,9 @@ user: !save
 ## 🖼️ Example
 
 ```plaintext
-user: Explain these files ^ clichatbot.py ^ settings_example.py
+user: Explain these files
+~ clichatbot.py
+~ settings_example.py
 Completed loading the file: 'clichatbot.py'
 Completed loading the file: 'settings_example.py'
 gpt-5-medium assistant:
@@ -134,7 +141,8 @@ Overview
 ```
 
 ```plaintext
-user: Analyze the letter and provide a summary of the key points. ^ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
+user: Analyze the letter and provide a summary of the key points.
+~ https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf
 Processing the file: 'https://www.berkshirehathaway.com/qtrly/2ndqtr25.pdf'
 gpt-5-medium assistant:
 Here’s a concise, decision‑oriented summary of Berkshire Hathaway’s Q2 2025 Form 10‑Q.
