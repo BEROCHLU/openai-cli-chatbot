@@ -98,7 +98,7 @@ def save_transcript(transcript: list, model_label: str, save_dir="./history") ->
     history_file = Path(save_dir) / f"{model_label}_{timestamp}.md"
 
     try:
-        with open(history_file, "w", encoding="utf-8") as f:
+        with open(history_file, "w", encoding="utf-8", errors="replace") as f:
             # 会話履歴の出力
             for speaker in transcript:
                 f.write(f"user: {speaker['user']}\nassistant: {speaker['assistant']}\n")
@@ -260,6 +260,9 @@ def main():
             isSearch = True
             user_question = user_question.removesuffix(" --search")
             console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
+
+        # UnicodeEncodeError: 'utf-8' codec can't encode characters in position 0-1: surrogates not allowed
+        user_question = user_question.encode("utf-8", "replace").decode("utf-8")
 
         messages = [
             {
