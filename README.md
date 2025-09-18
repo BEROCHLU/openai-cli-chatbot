@@ -15,7 +15,7 @@ Uses event streaming and `previous_response_id` to maintain context efficiently.
   - Multi-line prompt input (Enter = new line, Alt+Enter = send)
   - Emacs-style shortcuts (e.g., Ctrl+A, Ctrl+E, Ctrl+K, etc.)
 * 💾 Conversation history saved to `./history`
-* 📂 File input via lines starting with `~ ` (tilde + space):
+* 📂 File input via lines starting with `~␣` (tilde + space):
   - Text-based files (`.txt`, `.csv`, `.py`, `.md`, etc.)
   - Excel files (`.xlsx`, automatically converted to JSON)
   - PDF files (`.pdf`, supports both local files and URLs)
@@ -80,7 +80,7 @@ user: Your question
 ```
 
 ### File Analysis
-Multiple files supported  (each file path on a new line starting with **`~ `**):
+Multiple files supported  (each file path on a new line starting with **`~␣`**):
 
 ```plaintext
 user: Explain these files
