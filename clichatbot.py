@@ -251,7 +251,7 @@ def main():
             save_transcript(transcript, MODEL_LABEL)
             continue
 
-        args = re.split(r"\s\^\s", user_input)  # 質問とファイルパスを ^ で区切る
+        args = re.split(r"^~\s", user_input, flags=re.M)  # 質問とファイルパスを正規表現で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
         user_index = 0
         isSearch = False
