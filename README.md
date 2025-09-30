@@ -174,7 +174,7 @@ Headline results
 
 - **Reasoning usage**:
   - Valid only for reasoning models (`gpt-5`, `o1–o9`), excluding `gpt-5-chat-latest`.
-  - `minimal` → intended for `gpt-5`, `gpt-5-mini`, `gpt-5-nano`.
+  - `minimal` → intended for `gpt-5` family.
   - For `o1–o9`, `minimal` falls back to `low`.
 - **STREAM=False** → single Markdown-rendered reply per turn.
 - If an error occurs with an HTTP-linked PDF, try downloading the file first.
