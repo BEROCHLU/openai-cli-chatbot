@@ -99,6 +99,7 @@ user: Are these files related?
 ```
 
 ### Web Search
+Add the `--search` flag at the end of your question. `gpt-5-chat-latest` is not supported.
 ```plaintext
 user: What are the latest developments in quantum computing? --search
 ```
