@@ -179,6 +179,7 @@ Headline results
   - For `o1–o9`, `minimal` falls back to `low`.
 - **STREAM=False** → single Markdown-rendered reply per turn.
 - If an error occurs with an HTTP-linked PDF, try downloading the file first.
+- Surrogate pair characters are not supported due to a limitation in prompt_toolkit.
 
 ---
 

@@ -291,7 +291,11 @@ def main():
         )
 
         with console.status("[bold green]thinking...[/bold green]", spinner="dots"):
-            response = client.responses.create(**api_params)
+            try:
+                response = client.responses.create(**api_params)
+            except Exception as e:
+                console.print(f"[bold red]Error during API call: {e}[/bold red]")
+                continue
 
         console.print(f"[bold green]{MODEL_LABEL} assistant[/bold green]:")
 
