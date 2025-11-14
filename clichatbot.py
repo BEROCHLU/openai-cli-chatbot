@@ -43,6 +43,15 @@ def get_api_params(
     if re.match(r"^gpt-4\.1", model):
         params["max_output_tokens"] = 32768
 
+    # gpt-5.1-chat-latest
+    elif re.match(r"^gpt-5\.1-chat-latest$", model):
+        params.update(
+            {
+                "temperature": 1.0,
+                "reasoning": {"effort": "medium"},
+            }
+        )
+
     # gpt-5 系 (chat-latestを除く)
     elif re.match(r"^gpt-5(?!-chat)", model):
         if isSearch and effort == "minimal":
