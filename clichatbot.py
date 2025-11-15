@@ -45,6 +45,7 @@ def get_api_params(
 
     # gpt-5.1-chat-latest
     elif re.match(r"^gpt-5\.1-chat-latest$", model):
+        console.print("Only medium is acceptable for gpt-5.1-chat-latest, so it was changed to 'medium'.")
         params.update(
             {
                 "temperature": 1.0,
@@ -229,16 +230,11 @@ def attach_filecontents(file_paths: list[str]):
 def main():
     PROMPT: str = settings.PROMPT
     MODEL: str = settings.MODEL
+    MODEL_LABEL: str = ""
     TEMPERATURE: float = settings.TEMPERATURE
     STREAM: bool = settings.STREAM
     REASONING_EFFORT: Optional[str] = settings.REASONING_EFFORT
     COUNTRY: str = settings.COUNTRY
-
-    # 推論モデルなら model + reasoning_effort
-    if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
-        MODEL_LABEL = "-".join([MODEL, REASONING_EFFORT])
-    else:
-        MODEL_LABEL = MODEL
 
     response_id = None
     transcript = []  # 会話ログ（ローカル保持用）
@@ -257,7 +253,8 @@ def main():
         if not user_input:
             break
         elif user_input.strip() == "!save":
-            save_transcript(transcript, MODEL_LABEL)
+            if transcript:
+                save_transcript(transcript, MODEL_LABEL)
             continue
 
         args = re.split(r"^~\s", user_input, flags=re.M)  # 質問とファイルパスを正規表現で区切る
@@ -298,6 +295,12 @@ def main():
         api_params = get_api_params(
             messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
         )
+
+        # 推論モデルなら model + reasoning_effort
+        if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
+            MODEL_LABEL = "-".join([MODEL, api_params["reasoning"]["effort"]])
+        else:
+            MODEL_LABEL = MODEL
 
         with console.status("[bold green]thinking...[/bold green]", spinner="dots"):
             try:

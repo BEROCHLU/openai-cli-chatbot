@@ -53,11 +53,11 @@ Use [Windows Terminal](https://apps.microsoft.com/detail/windows-terminal/9N0DX2
 
    ```python
    PROMPT = "You are a helpful assistant. Respond in well-structured Markdown."
-   MODEL = "gpt-5"  # gpt-5 | gpt-5-mini | gpt-5-chat-latest | gpt-5-codex | gpt-4.1 | gpt-4.1-mini | o4-mini | o3 | gpt-4o
-   TEMPERATURE = 1.0
-   STREAM = True     # True | False
-   REASONING_EFFORT = "medium"  # low | medium | high | minimal
-   COUNTRY = "JP" # Two-letter ISO country code for web search
+   MODEL = "gpt-5.1-chat-latest"  # gpt-5.1-chat-latest | gpt-5.1 | gpt-5.1-codex | gpt-5.1-codex-mini | gpt-5-chat-latest | gpt-5 | gpt-5-mini | gpt-4.1 | gpt-4.1-mini | o4-mini
+   TEMPERATURE = 0.35
+   STREAM = False  # True | False
+   REASONING_EFFORT = "low"  # low | medium | high | minimal
+   COUNTRY = "JP"  # A two-letter ISO country code, like US
    ```
 
 3. **Run**
@@ -163,7 +163,7 @@ Headline results
 ## ⚙️ Configuration
 
 - **PROMPT** → System prompt for the assistant (e.g., `"You are a helpful assistant."`)
-- **MODEL** → OpenAI model (`gpt-5`, `gpt-4.1`, `o4-mini`, etc.)
+- **MODEL** → OpenAI model (`gpt-5.1`, `gpt-4.1`, `o4-mini`, etc.)
 - **TEMPERATURE** → Higher = more creative, Lower = more deterministic
 - **STREAM** → Stream output (`True`/`False`)
 - **REASONING_EFFORT** → Controls reasoning depth (`low`, `medium`, `high`, `minimal`)
