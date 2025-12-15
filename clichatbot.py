@@ -43,9 +43,9 @@ def get_api_params(
     if re.match(r"^gpt-4\.1", model):
         params["max_output_tokens"] = 32768
 
-    # gpt-5.1-chat-latest
-    elif re.match(r"^gpt-5\.1-chat-latest$", model):
-        console.print("Only medium is acceptable for gpt-5.1-chat-latest, so it was changed to 'medium'.")
+    # gpt-5.x-chat-latest
+    elif re.match(r"^gpt-5\.\d-chat-latest$", model):
+        console.print("Only medium is acceptable for gpt-5.x-chat-latest, so it was changed to 'medium'.")
         params.update(
             {
                 "temperature": 1.0,
