@@ -51,8 +51,8 @@ export OPENAI_API_KEY="your_api_key_here"
 Edit `settings.py` to define your defaults:
 ```python
 PROMPT = "You are a helpful assistant."
-MODEL = "gpt-5.2-chat-latest"
-TEMPERATURE = 0.35
+MODEL = "gpt-5.1-chat-latest"
+TEMPERATURE = 1.0
 STREAM = False
 REASONING_EFFORT = "none"  # low | medium | high | minimal | none
 ```
