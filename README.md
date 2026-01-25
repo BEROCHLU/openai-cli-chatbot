@@ -99,7 +99,6 @@ The application applies different parameters based on the `MODEL` string defined
 
 ## 📝 Notes
 
-* **Developer Role**: The `PROMPT` in `settings.py` is passed as a `developer` role message to the API.
 * **Constraints**: Surrogate pair characters are not supported due to a limitation in `prompt_toolkit`.
 
 ---
