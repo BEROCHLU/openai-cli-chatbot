@@ -92,7 +92,7 @@ The application applies different parameters based on the `MODEL` string defined
 | Model Group | Max Tokens | Reasoning Effort | Temperature |
 | --- | --- | --- | --- |
 | **`gpt-5.x`** | 128,000 | Supported | Not Applied |
-| **`gpt-5.x-chat-latest`** | 16,384 | Only medium | Not Applied |
+| **`gpt-5.x-chat-latest`** | 16,384 | Not Applied | Not Applied |
 | **`gpt-4.1`** | 32,768 | Not Applied | Supported |
 
 ---
