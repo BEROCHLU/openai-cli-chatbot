@@ -26,14 +26,11 @@ def get_api_params(
     stream: bool,
     effort: str,
     response_id: Optional[str],
-    isSearch: bool,
-    country: str,
 ) -> dict:
     # 基本パラメータ
     params = {
         "input": messages,
         "model": model,
-        "temperature": temperature,
         "max_output_tokens": 16384,
         "stream": stream,
         "previous_response_id": response_id,
@@ -41,60 +38,23 @@ def get_api_params(
 
     # gpt-4.1 系
     if re.match(r"^gpt-4\.1", model):
-        params["max_output_tokens"] = 32768
-
-    # gpt-5.x-chat-latest
-    elif re.match(r"^gpt-5\.\d-chat-latest$", model):
-        console.print("Only medium is acceptable for gpt-5.x-chat-latest, so it was changed to 'medium'.")
         params.update(
             {
-                "temperature": 1.0,
-                "reasoning": {"effort": "medium"},
+                "max_output_tokens": 32768,
+                "temperature": temperature,
             }
         )
 
-    # gpt-5 系 (chat-latestを除く)
-    elif re.match(r"^gpt-5(?!-chat)", model):
-        if isSearch and effort == "minimal":
-            effort = "low"
-            console.print("The parameter 'minimal' was changed to 'low' because it couldn't be accept by web search.")
+    # gpt-5.x-chat-latest 系
+    elif re.match(r"^gpt-5\.\d-chat-latest", model):
+        pass  # do nothing
 
+    # gpt-5.x 系 (chat-latestを除く)
+    elif re.match(r"^gpt-5\.\d$", model):
         params.update(
             {
-                "temperature": 1.0,
                 "max_output_tokens": 128000,
                 "reasoning": {"effort": effort},
-            }
-        )
-
-    # o1～o9
-    elif re.match(r"^o[1-9]", model):
-        if effort == "minimal":
-            effort = "low"
-            console.print(
-                "The parameter 'minimal' is only for the gpt-5 family (except 'gpt-5-chat-latest'), so it was changed to 'low'."
-            )
-
-        params.update(
-            {
-                "temperature": 1.0,
-                "max_output_tokens": 100000,
-                "reasoning": {"effort": effort},
-            }
-        )
-
-    if isSearch:
-        params.update(
-            {
-                "tools": [
-                    {
-                        "type": "web_search",
-                        "user_location": {
-                            "type": "approximate",
-                            "country": country,
-                        },
-                    }
-                ]
             }
         )
 
@@ -234,7 +194,6 @@ def main():
     TEMPERATURE: float = settings.TEMPERATURE
     STREAM: bool = settings.STREAM
     REASONING_EFFORT: Optional[str] = settings.REASONING_EFFORT
-    COUNTRY: str = settings.COUNTRY
 
     response_id = None
     transcript = []  # 会話ログ（ローカル保持用）
@@ -247,7 +206,6 @@ def main():
     ]
 
     while True:
-        # user_input = input("user: ").strip()
         user_input = prompt("user: ", multiline=True, prompt_continuation="")
 
         if not user_input:
@@ -260,12 +218,6 @@ def main():
         args = re.split(r"^~\s", user_input, flags=re.M)  # 質問とファイルパスを正規表現で区切る
         user_question = args[0].strip()  # 最初の引数を質問として扱う
         user_index = 0
-        isSearch = False
-
-        if user_question.endswith(" --search"):
-            isSearch = True
-            user_question = user_question.removesuffix(" --search")
-            console.print(f"[bold sky_blue1]Enable web search.[/bold sky_blue1]")
 
         # UnicodeEncodeError: 'utf-8' codec can't encode characters in position 0-1: surrogates not allowed
         user_question = user_question.encode("utf-8", "replace").decode("utf-8")
@@ -292,12 +244,10 @@ def main():
             lst_filecontents = attach_filecontents(file_paths)
             messages[user_index]["content"].extend(lst_filecontents)  # type: ignore
 
-        api_params = get_api_params(
-            messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id, isSearch, COUNTRY
-        )
+        api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id)
 
-        # 推論モデルなら model + reasoning_effort
-        if re.match(r"^(gpt-5(?!-chat)|o[1-9])", MODEL):
+        # gpt-5.x 系であれば model + reasoning_effort
+        if re.match(r"^gpt-5\.\d$", MODEL):
             MODEL_LABEL = "-".join([MODEL, api_params["reasoning"]["effort"]])
         else:
             MODEL_LABEL = MODEL
