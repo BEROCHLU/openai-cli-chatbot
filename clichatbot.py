@@ -49,8 +49,8 @@ def get_api_params(
     elif re.match(r"^gpt-5\.\d-chat-latest", model):
         pass  # do nothing
 
-    # gpt-5.x 系 (chat-latestを除く)
-    elif re.match(r"^gpt-5\.\d$", model):
+    # gpt-5 系
+    elif re.match(r"^gpt-5", model):
         params.update(
             {
                 "max_output_tokens": 128000,
@@ -246,7 +246,7 @@ def main():
 
         api_params = get_api_params(messages, MODEL, TEMPERATURE, STREAM, REASONING_EFFORT, response_id)
 
-        # gpt-5.x 系であれば model + reasoning_effort
+        # gpt‑5.x 系（ただし chat‑latest は除く）なら model label を付与する
         if re.match(r"^gpt-5\.\d$", MODEL):
             MODEL_LABEL = "-".join([MODEL, api_params["reasoning"]["effort"]])
         else:
