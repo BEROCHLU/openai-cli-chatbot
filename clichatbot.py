@@ -131,7 +131,8 @@ def attach_filecontents(file_paths: list[str]):
                     # エクセルの場合はJSONに変換
                     sheets_dict = pd.read_excel(file_path, sheet_name=None)
                     json_data = {sheet: df.to_dict(orient="records") for sheet, df in sheets_dict.items()}
-                    json_str = json.dumps(json_data, ensure_ascii=False, separators=(",", ":"))
+                    # Object of type Timestamp is not JSON serializable
+                    json_str = json.dumps(json_data, ensure_ascii=False, separators=(",", ":"), default=str)
 
                     file_content = {
                         "type": "input_text",
